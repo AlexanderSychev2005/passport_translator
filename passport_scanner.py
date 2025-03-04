@@ -98,7 +98,7 @@ def main():
 
     full_text = " ".join(result)
     entities = {
-        "Орган що видав/ Authority": re.search(r"(\d{4})", full_text),
+        "Authority": re.search(r"(\d{4})", full_text),
         "MRZ": re.search(r"(P\s*<[^\n]*\d{2})", full_text),
     }
     filtered_entities = {k: v.group(1) if v else None for k, v in entities.items()}
@@ -106,7 +106,7 @@ def main():
 
     mrz = filtered_entities['MRZ'].upper()
 
-    authority = filtered_entities['Орган що видав/ Authority']
+    authority = filtered_entities['Authority']
 
     mrz = mrz.replace("О", "O").replace("М", "M")
     mrz_pattern = re.compile(
