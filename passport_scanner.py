@@ -26,9 +26,12 @@ MONTH_TRANSLATION = {
 
 
 def translate_date(date_str):
-    day, month, year = date_str.split()
-    month_turkish = MONTH_TRANSLATION.get(month, month)
-    return f"{day} {month_turkish} {year}"
+    try:
+        day, month, year = date_str.split()
+        month_turkish = MONTH_TRANSLATION.get(month, month)
+        return f"{day} {month_turkish} {year}"
+    except ValueError:
+        return date_str
 
 
 def save_to_file(filename, data):
@@ -83,32 +86,53 @@ def save_to_file(filename, data):
     c.save()
 
 
-def main():
-    image = cv2.imread("oleg_test.jpg")
+def extract_text_from_image(image_path):
+    try:
+        image = cv2.imread(image_path)
+        reader = easyocr.Reader(['en', 'uk'], gpu=True)
+        result = reader.readtext(image,
+                                 detail=0,
+                                 contrast_ths=0.5,
+                                 adjust_contrast=0.7,
+                                 text_threshold=0.6,
+                                 low_text=0.4,
+                                 canvas_size=2000,
+                                 decoder='wordbeamsearch')
+        full_text = " ".join(result)
+        return full_text
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
 
-    reader = easyocr.Reader(['en', 'uk'], gpu=True)
-    result = reader.readtext(image,
-                             detail=0,
-                             contrast_ths=0.5,
-                             adjust_contrast=0.7,
-                             text_threshold=0.6,
-                             low_text=0.4,
-                             canvas_size=2000,
-                             decoder='wordbeamsearch')
 
-    full_text = " ".join(result)
-    entities = {
-        "Authority": re.search(r"(\d{4})", full_text),
-        "MRZ": re.search(r"(P\s*<[^\n]*\d{2})", full_text),
-    }
-    filtered_entities = {k: v.group(1) if v else None for k, v in entities.items()}
-    filtered_entities['MRZ'] = filtered_entities['MRZ'].replace(" ", '')
+def extract_authority(full_text):
+    authority = re.search(r"(\d{4})", full_text)
+    authority = authority.group(0)
+    return authority
 
-    mrz = filtered_entities['MRZ'].upper()
 
-    authority = filtered_entities['Authority']
-
+def extract_mrz(full_text):
+    mrz = re.search(r"(P\s*<[^\n]*\d{2})", full_text)
+    mrz = mrz.group(0)
+    mrz = mrz.replace(" ", '').upper()
     mrz = mrz.replace("О", "O").replace("М", "M")
+    return mrz
+
+
+def main():
+    full_text = extract_text_from_image("oleg_test.jpg")
+    if not full_text:
+        print("No text found in the image.")
+        return
+    authority = extract_authority(full_text)
+    if not authority:
+        print("Authority not found in the text.")
+        return
+    mrz = extract_mrz(full_text)
+    if not mrz:
+        print("MRZ not found in the text.")
+        return
+
     mrz_pattern = re.compile(
         r"P<(?P<country>[A-Z]{3})"
         r"(?P<surname>[A-Z]+)<<(?P<name>[A-Z]+)<+"
