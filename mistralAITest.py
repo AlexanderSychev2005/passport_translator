@@ -49,7 +49,7 @@ with open("ner_output.html", "w", encoding="utf-8") as f:
 translator = deepl.Translator(DEEPL_API_KEY)
 text_eng = translator.translate_text(result, source_lang="UK", target_lang="EN-US").text
 
-nlp_eng = spacy.load("en_core_web_sm")
+nlp_eng = spacy.load("en_core_web_trf")
 doc_eng = nlp_eng(text_eng)
 
 html_eng = displacy.render(doc_eng, style="ent", page=True)
