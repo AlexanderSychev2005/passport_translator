@@ -106,7 +106,7 @@ def extract_text_from_image(image_path):
 
 
 def extract_authority(full_text):
-    authority = re.search(r"(\d{4})", full_text)
+    authority = re.search(r"(\s+\d{4}\s+)", full_text)
     authority = authority.group(0)
     return authority
 
