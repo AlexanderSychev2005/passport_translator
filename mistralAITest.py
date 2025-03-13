@@ -27,31 +27,40 @@ def encode_image(image_path):
         return None
 
 
-base64_image = encode_image(IMAGE_PATH)
-client = Mistral(api_key=API_KEY)
+def main():
+    base64_image = encode_image(IMAGE_PATH)
+    client = Mistral(api_key=API_KEY)
 
-ocr_response = client.ocr.process(
-    model="mistral-ocr-latest",
-    document={
-        "type": "image_url",
-        "image_url": f"data:image/jpeg;base64,{base64_image}"
-    }
-)
+    ocr_response = client.ocr.process(
+        model="mistral-ocr-latest",
+        document={
+            "type": "image_url",
+            "image_url": f"data:image/jpeg;base64,{base64_image}"
+        }
+    )
 
-result = ocr_response.pages[0].markdown
+    result = ocr_response.pages[0].markdown
 
-nlp = spacy.load("uk_core_news_trf")
-doc = nlp(result)
-html = displacy.render(doc, style="ent", page=True)
-with open("ner_output.html", "w", encoding="utf-8") as f:
-    f.write(html)
+    nlp_ukr = spacy.load("uk_core_news_trf")
+    doc_ukr = nlp_ukr(result)
+    html_ukr = displacy.render(doc_ukr, style="ent", page=True)
+    ukr_html_name = 'ukr_ner_output.html'
+    with open(ukr_html_name, "w", encoding="utf-8") as f:
+        f.write(html_ukr)
 
-translator = deepl.Translator(DEEPL_API_KEY)
-text_eng = translator.translate_text(result, source_lang="UK", target_lang="EN-US").text
+    translator = deepl.Translator(DEEPL_API_KEY)
+    translated_result = translator.translate_text(result, source_lang="UK", target_lang="EN-US").text
 
-nlp_eng = spacy.load("en_core_web_trf")
-doc_eng = nlp_eng(text_eng)
+    nlp_eng = spacy.load("en_core_web_trf")
+    doc_eng = nlp_eng(translated_result)
 
-html_eng = displacy.render(doc_eng, style="ent", page=True)
-with open("ner_output_eng.html", "w", encoding="utf-8") as f:
-    f.write(html_eng)
+    eng_html_name = 'ner_output_eng.html'
+    html_eng = displacy.render(doc_eng, style="ent", page=True)
+    with open(eng_html_name, "w", encoding="utf-8") as f:
+        f.write(html_eng)
+
+    return result, translated_result, ukr_html_name, eng_html_name
+
+
+if __name__ == "__main__":
+    main()
