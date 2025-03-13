@@ -41,12 +41,12 @@ def main():
 
     result = ocr_response.pages[0].markdown
 
-    nlp_ukr = spacy.load("uk_core_news_trf")
-    doc_ukr = nlp_ukr(result)
-    html_ukr = displacy.render(doc_ukr, style="ent", page=True)
-    ukr_html_name = 'ukr_ner_output.html'
-    with open(ukr_html_name, "w", encoding="utf-8") as f:
-        f.write(html_ukr)
+    nlp_result = spacy.load("uk_core_news_trf")
+    doc_result = nlp_result(result)
+    html_res = displacy.render(doc_result, style="ent", page=True)
+    res_html_name = 'result_ner.html'
+    with open(res_html_name, "w", encoding="utf-8") as f:
+        f.write(html_res)
 
     translator = deepl.Translator(DEEPL_API_KEY)
     translated_result = translator.translate_text(result, source_lang="UK", target_lang="EN-US").text
@@ -54,12 +54,12 @@ def main():
     nlp_eng = spacy.load("en_core_web_trf")
     doc_eng = nlp_eng(translated_result)
 
-    eng_html_name = 'ner_output_eng.html'
+    eng_html_name = 'translated_result_ner.html'
     html_eng = displacy.render(doc_eng, style="ent", page=True)
     with open(eng_html_name, "w", encoding="utf-8") as f:
         f.write(html_eng)
 
-    return result, translated_result, ukr_html_name, eng_html_name
+    return result, translated_result, res_html_name, eng_html_name
 
 
 if __name__ == "__main__":
