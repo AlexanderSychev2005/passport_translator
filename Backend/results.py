@@ -2,7 +2,6 @@ import re
 from datetime import datetime
 import easyocr
 import cv2
-
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase import pdfmetrics
@@ -120,8 +119,8 @@ def extract_mrz(full_text):
     return mrz
 
 
-def main(image):
-    full_text = extract_text_from_image(image)
+def getData(file_path):
+    full_text = extract_text_from_image(file_path)
     if not full_text:
         print("No text found in the image.")
         return
@@ -185,10 +184,6 @@ def main(image):
         "Record number": f"{personal_number[:8]}-{personal_number[8:]}",
         "MRZ": mrz
     }
-    file_path="Backend/static/media/passport_data.pdf"
+    file_path = "./static/media/passport_data.pdf"
     save_to_file(file_path, parsed_results)
     return file_path
-
-
-if __name__ == "__main__":
-    main()

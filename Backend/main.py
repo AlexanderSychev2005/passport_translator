@@ -6,6 +6,7 @@ import numpy as np
 import cv2
 import results as result
 
+
 app = Flask(__name__)
 app.secret_key = 'document_scanner_app'
 
@@ -68,9 +69,7 @@ def transform():
 @app.route('/prediction')
 def prediction():
     wrap_image_filepath = settings.join_path(settings.MEDIA_DIR, 'magic_color.jpg')
-    image = cv2.imread(wrap_image_filepath)
-    results = result.main(image)
-    print(results)
+    results = result.getData(wrap_image_filepath)
     return render_template("prediction.html", results=results)
 
 
