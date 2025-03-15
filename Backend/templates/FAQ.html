@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+  href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,600,700"
+  rel="stylesheet"
+/>
+    <title>Components </title>
+   
+    <style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+body {
+    font-family: "Inter", sans-serif;
+    color:#343a40;
+    /*border-bottom: 8px solid #087f5b;*/
+}
+.accordion{
+    width:700px;
+    margin: 100px auto;
+    background-color: #fff8f8 ;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+.item-1{
+    border-top: 4px solid  #fff8f8;
+    box-shadow: 0 0 32px rgba(0,0,0 ,0.1);
+    padding: 24px;
+    display: grid;
+    grid-template-columns: auto 1fr auto ;
+    column-gap: 24px;
+    row-gap: 32px;
+    align-items: center;
+    transition: all .3s;
+
+}
+.number, .text{
+    font-size: 24px;
+    font-weight: bold;
+    color: #000;
+   /* color:#087f5b;*/
+}
+.number{
+    color:#ced4da;
+}
+.text{
+    justify-self:  start;
+}
+.icon-1{
+    width: 24px;
+    height: 24px;
+    stroke:  #087f5b ;
+    transition: transform 0.3s ease;
+}
+.hidden-box p {
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+.hidden-box ul{
+    color: #adb5bd;
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.open{
+    border-top: 4px solid #087f5b;
+    transition: all .3s;
+}
+.open .text{
+    color: #087f5b;
+}
+.open .number{
+    color: #087f5b;
+}
+.hidden-box {
+    grid-column: 2;
+    display: none;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+}
+
+@keyframes openAccordion {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 500px; /* Достатньо для вмісту */
+    }
+}
+
+@keyframes closeAccordion {
+    from {
+        opacity: 1;
+        max-height: 500px;
+    }
+    to {
+        opacity: 0;
+        max-height: 0px;
+    }
+}
+
+.open .hidden-box {
+    display: block;
+    animation: openAccordion 0.5s ease forwards;
+}
+
+.hidden-box.closing {
+    animation: closeAccordion 0.5s ease  forwards;
+}
+
+.icon-1 {
+    width: 24px;
+    height: 24px;
+    stroke: #087f5b;
+    transition: transform 0.3s ease;
+}
+
+.open .icon-1 {
+    transform: rotate(180deg); /* Перевертаємо іконку */
+}
+
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const accordionItems = document.querySelectorAll(".item-1");
+        
+            accordionItems.forEach(item => {
+                item.addEventListener("click", function () {
+                    const hiddenBox = this.querySelector(".hidden-box");
+                    const isOpen = this.classList.contains("open");
+        
+                    if (isOpen) {
+                        hiddenBox.classList.add("closing"); // Запускаємо анімацію закриття
+                        
+                            this.classList.remove("open");
+                            hiddenBox.classList.remove("closing");
+                            hiddenBox.style.display = "none";
+                         // Час відповідає анімації у CSS (0.5s)
+                    } else {
+                        // Закриваємо всі відкриті елементи
+                        accordionItems.forEach(el => {
+                            const otherBox = el.querySelector(".hidden-box");
+                            if (el.classList.contains("open")) {
+                                otherBox.classList.add("closing");
+                              
+                                    el.classList.remove("open");
+                                    otherBox.classList.remove("closing");
+                                    otherBox.style.display = "none";
+                               
+                            }
+                        });
+        
+                        hiddenBox.style.display = "block";
+                        this.classList.add("open");
+                    }
+                });
+            });
+        });
+        
+    </script>
+</head>
+<body>
+    <div class="accordion">
+        <div class="item-1">
+            <p class="number">01</p>
+            <p class="text">Who we are ? </p>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-1">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
+              </svg>
+               <div class="hidden-box">
+                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis doloribus dolor ad quo ea omnis, quis, dignissimos architecto eius animi sit corrupti error, consectetur sapiente sint et illum quibusdam minima?</p>
+              <ul>
+                <li>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis doloribus dolor </li>
+                <li>Debitis doloribus dolor ad quo ea omnis, quis, dignissimos architecto eius animi sit corrupti error</li>
+                <li>Debitis doloribus dolor ad quo ea omnis, quis, dignissimos architecto eius animi sit corrupti error</li>
+                <li>Debitis doloribus dolor ad quo ea omnis, quis, dignissimos architecto eius animi sit corrupti error</li>
+            </ul>
+            </div>
+            </div>
+        <div class="item-1">
+        <p class="number">02</p>
+        <p class="text">How long I need to retire ? </p>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-1">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
+          </svg>
+           <div class="hidden-box">
+            <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis doloribus dolor ad quo ea omnis, quis, dignissimos architecto eius animi sit corrupti error, consectetur sapiente sint et illum quibusdam minima?</p>
+          <ul>
+            <li>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis doloribus dolor </li>
+            <li>Debitis doloribus dolor ad quo ea omnis, quis, dignissimos architecto eius animi sit corrupti error</li>
+            <li>Debitis doloribus dolor ad quo ea omnis, quis, dignissimos architecto eius animi sit corrupti error</li>
+            <li>Debitis doloribus dolor ad quo ea omnis, quis, dignissimos architecto eius animi sit corrupti error</li>
+        </ul>
+
+        </div>
+        </div>
+        <div class="item-1">
+            <p class="number">03</p>
+            <p class="text">What will be in this life? </p>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-1">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
+              </svg>
+               <div class="hidden-box">
+                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis doloribus dolor ad quo ea omnis, quis, dignissimos architecto eius animi sit corrupti error, consectetur sapiente sint et illum quibusdam minima?</p>
+              <ul>
+                <li>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Debitis doloribus dolor </li>
+                <li>Debitis doloribus dolor ad quo ea omnis, quis, dignissimos architecto eius animi sit corrupti error</li>
+                <li>Debitis doloribus dolor ad quo ea omnis, quis, dignissimos architecto eius animi sit corrupti error</li>
+                <li>Debitis doloribus dolor ad quo ea omnis, quis, dignissimos architecto eius animi sit corrupti error</li>
+            </ul>
+            </div>
+            </div>
+    </div>
+</body>
+</html>
