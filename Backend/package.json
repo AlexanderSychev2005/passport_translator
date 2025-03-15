@@ -1,0 +1,28 @@
+{
+  "name": "starter",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "watch:sass": "sass sass/main.scss css/style.css -w",
+    "devserver":"live-server",
+    "start": "npm-run-all --parallel watch:sass devserver",
+    "compile:sass": "sass sass/main.scss css/style.comp.css ",
+    "concat:css": " concat -o  css/style.concat.css css/icon-font.css css/style.comp.css",
+    "prefix:css": "postcss --use autoprefixer -b 'last 10 versions' css/style.concat.css -o css/style.prefix.css",
+    "compres:css": "sass css/style.prefix.css css/style.css ",
+    "build:css": "npm-run-all compile:sass concat:css prefix:css compres:css"
+  },
+  "author": "Oleh lobko",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "concat": "^1.0.3",
+    "npm-run-all": "^4.1.5",
+    "postcss-cli": "^11.0.0",
+    "sass": "^1.79.4"
+  },
+  "dependencies": {
+    "jquery": "^3.7.1"
+  }
+}
