@@ -1,4 +1,5 @@
 import nltk
+import numpy as np
 from datasets import load_dataset
 import evaluate
 import os
@@ -57,12 +58,21 @@ bleu_google = bleu.compute(predictions=translations_google, references=reference
 # bleu_marian = bleu.compute(predictions=translations_marian, references=references)['bleu']
 
 
-print(f"BLEU score deepl: {bleu_deepl}")
-print(f"BLEU score google: {bleu_google}")
+print(f"BLEU score deepl: {bleu_deepl:.2f}")
+print(f"BLEU score google: {bleu_google:.2f}")
 # print(f"BLEU score marian: {bleu_marian}")
 
 
 score_deepl = meteor_score(references, translations_deepl)
 score_google = meteor_score(references, translations_google)
-print(f"METEOR Score Deepl: {score_deepl}")
-print(f"METEOR Score Google: {score_google}")
+print(f"METEOR Score Deepl: {score_deepl:.2f}")
+print(f"METEOR Score Google: {score_google:.2f}")
+
+
+bertscore = evaluate.load("bertscore")
+
+bertscore_deepl = bertscore.compute(predictions=translations_deepl, references=ukrainian_sentences, lang="uk")
+bertscore_google = bertscore.compute(predictions=translations_google, references=ukrainian_sentences, lang="uk")
+
+print(f"BERTScore Deepl (F1): {np.mean(bertscore_deepl['f1']):.2f}")
+print(f"BERTScore Google (F1): {np.mean(bertscore_google['f1']):.2f}")
