@@ -77,7 +77,7 @@ def prediction():
 def file_translation():
     wrap_image_filepath = settings.join_path(settings.MEDIA_DIR, 'magic_color.jpg')
     translated_test, html_with_entities_name = document_results.getData(wrap_image_filepath)
-    return render_template("file_translation.html")
+    return render_template("file_translation.html", translated_test=translated_test, html_with_entities_name=html_with_entities_name)
 
 if __name__ == "__main__":
     app.run(debug=True)
