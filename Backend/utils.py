@@ -1,9 +1,7 @@
-import os
 import settings
 import cv2
 import numpy as np
 from imutils.perspective import four_point_transform
-import easyocr
 
 
 def save_upload_image(fileObj):
