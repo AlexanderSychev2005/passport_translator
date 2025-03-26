@@ -4,8 +4,8 @@ import settings
 import utils
 import numpy as np
 import cv2
-import results as result
-
+import passport_results # Assuming this is a custom module for passport results
+import document_results # Assuming this is a custom module for document results
 
 app = Flask(__name__)
 app.secret_key = 'document_scanner_app'
@@ -69,9 +69,15 @@ def transform():
 @app.route('/prediction')
 def prediction():
     wrap_image_filepath = settings.join_path(settings.MEDIA_DIR, 'magic_color.jpg')
-    results = result.getData(wrap_image_filepath)
+    results = passport_results.getData(wrap_image_filepath)
     return render_template("prediction.html", results=results)
 
+
+@app.route('/file_translation')
+def file_translation():
+    wrap_image_filepath = settings.join_path(settings.MEDIA_DIR, 'magic_color.jpg')
+    translated_test, html_with_entities_name = document_results.getData(wrap_image_filepath)
+    return render_template("file_translation.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
