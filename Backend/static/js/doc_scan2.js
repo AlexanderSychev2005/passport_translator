@@ -12,7 +12,7 @@ window.onload = function(){
   canvas.onmouseup = stopDragging;
   canvas.onmouseout = stopDragging;
   canvas.onmousemove = dragCircle;
-  
+
   };
 
 
@@ -44,25 +44,28 @@ function loadImage(file){
 });
 }
 
+
+
 function loadPoints(points){
 
   for (var i=0;i<points.length;i++) {
-    var radius = 10;
+    var radius = 6;
     var x = points[i].x;
     var y = points[i].y;
     console.log(x,y)
-    
-    var color = "#b7ff00"
+
+    var color = "#FFFF00"
     var circle = new Circle(x,y,radius,color);
     circles.push(circle);
     processFunction('/static/media/resize_image.jpg')
-  }
+
 }
+};
 
 
 
 function drawCircles(){
-    
+
     context = $("canvas")[0].getContext('2d');
     canvas = $("canvas")[0];
     context.clearRect(0,0,canvas.width,canvas.height);
@@ -74,10 +77,10 @@ function drawCircles(){
         context.beginPath();
         context.arc(circle.x, circle.y, circle.radius, 0, Math.PI*2);
         context.fillStyle = circle.color;
-        context.strokeStyle = "rgba(137,236,59,0.83)";
+        context.strokeStyle = "#76FF03";
 
         if (circle.isSelected) {
-            context.lineWidth = 6;
+            context.lineWidth = 4;
         }
         else {
             context.lineWidth = 2;
@@ -90,7 +93,7 @@ function drawCircles(){
         context.lineTo( circles[i-1>=0?i-1:3].x,  circles[i-1>=0?i-1:3].y);
         context.stroke();
     }
-    
+
 }
 
 
@@ -105,10 +108,10 @@ function canvasClick(e){
         if (distanceFromCenter <= circle.radius) {
           if (previousSelectedCircle != null) previousSelectedCircle.isSelected = false;
           previousSelectedCircle = circle;
-           
+
           circle.isSelected = true;
           isDragging = true;
-         
+
           drawCircles();
 
           return;
@@ -117,7 +120,7 @@ function canvasClick(e){
 }
 
 
- 
+
 function stopDragging() {
   isDragging = false;
 }
@@ -163,20 +166,20 @@ $(document).ready(function(){
                                       [circles[3].x,circles[3].y]]
                              }),
        success: function(){
-         window.location.href = 'prediction';
+         window.location.href = 'file_translation';
        }
       });
   });
 });
 
 // window process
-window.process = async (file)=>{ 
-  let ctx = $("canvas")[0].getContext('2d');
-  const img = await loadImage(file);
-  console.log("enter into process")
-  $("canvas")[0].width = img.width;
-  $("canvas")[0].height = img.height;
-  window.img = img;
-  ctx.drawImage(img,0,0,img.width,img.height);
-  drawCircles();
+window.process = async (file)=> {
+    let ctx = $("canvas")[0].getContext('2d');
+    const img = await loadImage(file);
+    console.log("enter into process")
+    $("canvas")[0].width = img.width;
+    $("canvas")[0].height = img.height;
+    window.img = img;
+    ctx.drawImage(img, 0, 0, img.width, img.height);
+    drawCircles();
 }
