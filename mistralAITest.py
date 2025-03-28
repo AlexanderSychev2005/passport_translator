@@ -57,7 +57,7 @@ def encode_image(image_path):
     """Encode the image to base64."""
     try:
         with open(image_path, "rb") as image_file:
-            return base64.b64encode(image_file.read()).decode('utf-8')
+            return base64.b64encode(image_file.read()).decode("utf-8")
     except FileNotFoundError:
         print(f"Error: The file {image_path} was not found.")
         return None
@@ -74,8 +74,8 @@ def main():
         model="mistral-ocr-latest",
         document={
             "type": "image_url",
-            "image_url": f"data:image/jpeg;base64,{base64_image}"
-        }
+            "image_url": f"data:image/jpeg;base64,{base64_image}",
+        },
     )
 
     result = ocr_response.pages[0].markdown
@@ -83,16 +83,18 @@ def main():
     nlp_result = spacy.load("uk_core_news_trf")
     doc_result = nlp_result(result)
     html_res = displacy.render(doc_result, style="ent", page=True)
-    res_html_name = 'result_ner.html'
+    res_html_name = "result_ner.html"
     with open(res_html_name, "w", encoding="utf-8") as f:
         f.write(html_res)
 
     translator = deepl.Translator(DEEPL_API_KEY)
-    translated_result = translator.translate_text(result, source_lang="UK", target_lang="EN-GB").text
+    translated_result = translator.translate_text(
+        result, source_lang="UK", target_lang="EN-GB"
+    ).text
     nlp_eng = spacy.load("en_core_web_trf")
     doc_eng = nlp_eng(translated_result)
 
-    eng_html_name = 'translated_result_ner.html'
+    eng_html_name = "translated_result_ner.html"
     html_eng = displacy.render(doc_eng, style="ent", page=True)
     with open(eng_html_name, "w", encoding="utf-8") as f:
         f.write(html_eng)

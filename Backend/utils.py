@@ -7,9 +7,9 @@ from imutils.perspective import four_point_transform
 def save_upload_image(fileObj):
     filename = fileObj.filename
 
-    name, ext = filename.split('.')
+    name, ext = filename.split(".")
 
-    save_filename = 'upload.' + ext
+    save_filename = "upload." + ext
 
     upload_image_path = settings.join_path(settings.SAVE_DIR, save_filename)
 
@@ -21,13 +21,13 @@ def save_upload_image(fileObj):
 def array_to_json_format(numpy_array):
     points = []
     for pt in numpy_array.tolist():
-        points.append({'x': pt[0], 'y': pt[1]})
+        points.append({"x": pt[0], "y": pt[1]})
 
     return points
 
 
 #
-class DocumentScan():
+class DocumentScan:
     def __init__(self):
         pass
 
@@ -70,7 +70,7 @@ class DocumentScan():
     def document_scanner(self, image_path):
         self.image = cv2.imread(image_path)
         img_re, self.size = self.resizer(self.image)
-        filename = 'resize_image.jpg'
+        filename = "resize_image.jpg"
         RESIZE_IMAGE_PATH = settings.join_path(settings.MEDIA_DIR, filename)
 
         cv2.imwrite(RESIZE_IMAGE_PATH, img_re)
@@ -88,9 +88,9 @@ class DocumentScan():
             closing = cv2.morphologyEx(dilate, cv2.MORPH_CLOSE, kernel)
 
             # find the contours
-            contours, hire = cv2.findContours(closing,
-                                              cv2.RETR_LIST,
-                                              cv2.CHAIN_APPROX_SIMPLE)
+            contours, hire = cv2.findContours(
+                closing, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE
+            )
 
             contours = sorted(contours, key=cv2.contourArea, reverse=True)
             for contour in contours:
@@ -114,6 +114,8 @@ class DocumentScan():
         four_points_orig = four_points_orig.astype(int)
         wrap_image = four_point_transform(self.image, four_points_orig)
         # apply magic color to wrap image
-        magic_color = self.apply_brightness_contrast(wrap_image, brightness=30, contrast=40)
+        magic_color = self.apply_brightness_contrast(
+            wrap_image, brightness=30, contrast=40
+        )
 
         return magic_color
