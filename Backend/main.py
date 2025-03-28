@@ -4,8 +4,8 @@ import settings
 import utils
 import numpy as np
 import cv2
-import passport_results # Assuming this is a custom module for passport results
-import document_results # Assuming this is a custom module for document results
+import passport_results  # Assuming this is a custom module for passport results
+import document_results  # Assuming this is a custom module for document results
 
 app = Flask(__name__)
 app.secret_key = 'document_scanner_app'
@@ -29,11 +29,11 @@ def scandoc():
         file = request.files['image_name']
         upload_image_path = utils.save_upload_image(file)
         print('Img save in =', upload_image_path)
-        # predict the coordianates
+        # predict the coordinates
         four_points, size = docscan.document_scanner(upload_image_path)
         print(four_points, size)
         if four_points is None:
-            message = 'UNABLE TO LOCATE THE CORDANATES'
+            message = 'UNABLE TO LOCATE THE COORDINATES'
             points = [
                 {'x': 0, 'y': 10999999},
                 {'x': 0, 'y': 0},
@@ -44,10 +44,11 @@ def scandoc():
                                    message=message)
         else:
             points = utils.array_to_json_format(four_points)
-            message = 'Located the Cordinets of Document  '
+            message = 'Located the Coordinates of Document'
             return render_template('scaner.html', points=points, fileupload=True, message=message)
 
     return render_template("scaner.html")
+
 
 @app.route('/scandoc', methods=['GET', 'POST'])
 def scan():
@@ -55,14 +56,14 @@ def scan():
         file = request.files['image_name']
         upload_image_path = utils.save_upload_image(file)
         print('Img save in =', upload_image_path)
-        # predict the coordianates
+        # predict the coordinates
         four_points, size = docscan.document_scanner(upload_image_path)
         print(four_points, size)
         if four_points is None:
-            message = 'UNABLE TO LOCATE THE CORDANATES'
+            message = 'UNABLE TO LOCATE THE COORDINATES'
             points = [
-                {'x':0 , 'y': 0},
-                {'x': 420, 'y':0},
+                {'x': 0, 'y': 0},
+                {'x': 420, 'y': 0},
                 {'x': 0, 'y': 420},
                 {'x': 420, 'y': 420}
             ]
@@ -74,6 +75,7 @@ def scan():
             return render_template('scanerdoc.html', points=points, fileupload=True, message=message)
 
     return render_template("scanerdoc.html")
+
 
 @app.route('/transform', methods=['POST'])
 def transform():
@@ -105,7 +107,9 @@ def file_translation():
     html_filepath = settings.join_path(settings.MEDIA_DIR, html_with_entities_name)
     with open(html_filepath, 'r', encoding='utf-8') as f:
         html_with_entities = f.read()
-    return render_template("file_translation.html", translated_text=translated_text, html_with_entities=html_with_entities)
+    return render_template("file_translation.html",
+                           translated_text=translated_text,
+                           html_with_entities=html_with_entities)
 
 if __name__ == "__main__":
     app.run(debug=True)

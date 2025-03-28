@@ -89,7 +89,6 @@ def main():
 
     translator = deepl.Translator(DEEPL_API_KEY)
     translated_result = translator.translate_text(result, source_lang="UK", target_lang="EN-GB").text
-
     nlp_eng = spacy.load("en_core_web_trf")
     doc_eng = nlp_eng(translated_result)
 
