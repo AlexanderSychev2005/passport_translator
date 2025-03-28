@@ -79,12 +79,12 @@ def getData(image_path):
 
     result = ocr_response.pages[0].markdown
 
-    nlp_result = spacy.load("uk_core_news_trf")
-    doc_result = nlp_result(result)
-    html_res = displacy.render(doc_result, style="ent", page=True)
-    res_html_name = 'result_ner.html'
-    with open(res_html_name, "w", encoding="utf-8") as f:
-        f.write(html_res)
+    # nlp_result = spacy.load("uk_core_news_trf")
+    # doc_result = nlp_result(result)
+    # html_res = displacy.render(doc_result, style="ent", page=True)
+    # res_html_name = 'result_ner.html'
+    # with open(res_html_name, "w", encoding="utf-8") as f:
+    #     f.write(html_res)
 
     translator = deepl.Translator(DEEPL_API_KEY)
     translated_result = translator.translate_text(result, source_lang="UK", target_lang="EN-GB").text
@@ -93,8 +93,9 @@ def getData(image_path):
     doc_eng = nlp_eng(translated_result)
 
     eng_html_name = 'translated_result_ner.html'
+    eng_html_path = os.path.join("static", "media", eng_html_name)
     html_eng = displacy.render(doc_eng, style="ent", page=True)
-    with open(eng_html_name, "w", encoding="utf-8") as f:
+    with open(eng_html_path, "w", encoding="utf-8") as f:
         f.write(html_eng)
     # save_text_to_pdf(translated_result, "translated_result.pdf")
     # save_html_to_pdf(html_eng, "result_ner.pdf")

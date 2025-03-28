@@ -1,25 +1,27 @@
 {% extends 'scaner.html' %}
 
 {% block body %}
-    <style>
-.translated_text{
- font-family: 'Roboto', sans-serif;
-    font-size: 18px;
-    line-height: 1.8;
-    color: #2c2c2c;
-    margin-top: 30px;
-    margin-bottom: -50px;
-    letter-spacing: 1.2px;
-}
-.text{
-    margin-top: 10px;
-}
+<!--    <style>-->
+<!--.translated_text{-->
+<!-- font-family: 'Roboto', sans-serif;-->
+<!--    font-size: 18px;-->
+<!--    line-height: 1.8;-->
+<!--    color: #2c2c2c;-->
+<!--    margin-top: 30px;-->
+<!--    margin-bottom: -50px;-->
+<!--    letter-spacing: 1.2px;-->
+<!--}-->
+<!--.text{-->
+<!--    margin-top: 10px;-->
+<!--}-->
 </style>
 <body>
 <div class="container1">
 <h1>Your <span class="highlight"> result </span></h1>
 </div>
-<p class="translated_text">{{ translated_text }}</p>
+{% for line in translated_text.split('\n')  %}
+    <p class="translated_text">{{ line }}</p>
+{% endfor %}
 <div class="container1">
 <h1>Recognition <span class="highlight"> entity  </span></h1>
 </div>

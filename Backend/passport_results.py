@@ -158,6 +158,9 @@ def getData(file_path):
         gender = match.group("gender")
         expiry_date = match.group("expiry_date")
         personal_number = match.group("personal_number")
+    else:
+        print("No match found in MRZ.")
+        return
 
     date_obj = datetime.strptime(birth_date, "%y%m%d")
     formatted_date = date_obj.strftime("%d %b %Y")
