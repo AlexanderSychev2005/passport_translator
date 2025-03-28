@@ -8,20 +8,33 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfgen import canvas
 
 # Register fonts
-pdfmetrics.registerFont(TTFont('DejaVuSans', 'DejaVuSans.ttf'))
-pdfmetrics.registerFont(TTFont('DejaVuSansBold', 'DejaVuSans-Bold.ttf'))
+pdfmetrics.registerFont(TTFont("DejaVuSans", "DejaVuSans.ttf"))
+pdfmetrics.registerFont(TTFont("DejaVuSansBold", "DejaVuSans-Bold.ttf"))
 
 # Define translations for countries
 COUNTRIES_TRANSLATION = {
-    "UKR": "UKRAYNA", "TUR": "TÜRKİYE", "USA": "AMERİKA BİRLEŞİK DEVLETLERİ",
-    "RUS": "RUSYA", "DEU": "ALMANYA", "FRA": "FRANSA"
+    "UKR": "UKRAYNA",
+    "TUR": "TÜRKİYE",
+    "USA": "AMERİKA BİRLEŞİK DEVLETLERİ",
+    "RUS": "RUSYA",
+    "DEU": "ALMANYA",
+    "FRA": "FRANSA",
 }
 
 # Define translations for months
 MONTH_TRANSLATION = {
-    "Jan": "OCAK", "Feb": "ŞUBAT", "Mar": "MART", "Apr": "NİSAN",
-    "May": "MAYIS", "Jun": "HAZİRAN", "Jul": "TEMMUZ", "Aug": "AĞUSTOS",
-    "Sep": "EYLÜL", "Oct": "EKİM", "Nov": "KASIM", "Dec": "ARALIK"
+    "Jan": "OCAK",
+    "Feb": "ŞUBAT",
+    "Mar": "MART",
+    "Apr": "NİSAN",
+    "May": "MAYIS",
+    "Jun": "HAZİRAN",
+    "Jul": "TEMMUZ",
+    "Aug": "AĞUSTOS",
+    "Sep": "EYLÜL",
+    "Oct": "EKİM",
+    "Nov": "KASIM",
+    "Dec": "ARALIK",
 }
 
 
@@ -80,8 +93,8 @@ def save_to_file(filename, data):
     c.drawString(370, 520, f"DÜZENLEYEN MAKAM:")
 
     c.setFont("DejaVuSans", 7)
-    c.drawString(50, 470, data['MRZ'][:44])
-    c.drawString(50, 450, data['MRZ'][44:])
+    c.drawString(50, 470, data["MRZ"][:44])
+    c.drawString(50, 450, data["MRZ"][44:])
 
     c.save()
 
@@ -89,15 +102,17 @@ def save_to_file(filename, data):
 def extract_text_from_image(image_path):
     try:
         image = cv2.imread(image_path)
-        reader = easyocr.Reader(['en', 'uk'], gpu=True)
-        result = reader.readtext(image,
-                                 detail=0,
-                                 contrast_ths=0.5,
-                                 adjust_contrast=0.7,
-                                 text_threshold=0.6,
-                                 low_text=0.4,
-                                 canvas_size=2000,
-                                 decoder='wordbeamsearch')
+        reader = easyocr.Reader(["en", "uk"], gpu=True)
+        result = reader.readtext(
+            image,
+            detail=0,
+            contrast_ths=0.5,
+            adjust_contrast=0.7,
+            text_threshold=0.6,
+            low_text=0.4,
+            canvas_size=2000,
+            decoder="wordbeamsearch",
+        )
         full_text = " ".join(result)
         return full_text
     except Exception as e:
@@ -114,7 +129,7 @@ def extract_authority(full_text):
 def extract_mrz(full_text):
     mrz = re.search(r"(P\s*<[^\n]*\d{2})", full_text)
     mrz = mrz.group(0)
-    mrz = mrz.replace(" ", '').upper()
+    mrz = mrz.replace(" ", "").upper()
     mrz = mrz.replace("О", "O").replace("М", "M")
     return mrz
 
@@ -180,12 +195,12 @@ def getData(file_path):
         "Nationality": f"{nationality}",
         "Full country": f"{country_full}",
         "Date of birth": f"{translate_date(formatted_date)}",
-        "Gender": "KADIN" if gender == 'F' else "ADAM",
+        "Gender": "KADIN" if gender == "F" else "ADAM",
         "Authority": f"{authority}",
         "Date of issue": f"{translate_date(formatted_date_issue)}",
         "Date of expiry": f"{translate_date(formatted_date_exp)}",
         "Record number": f"{personal_number[:8]}-{personal_number[8:]}",
-        "MRZ": mrz
+        "MRZ": mrz,
     }
     file_path = "./static/media/passport_data.pdf"
     save_to_file(file_path, parsed_results)
