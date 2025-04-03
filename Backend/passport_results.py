@@ -113,11 +113,11 @@ def extract_text_from_image(image_path):
             canvas_size=2000,
             decoder="wordbeamsearch",
         )
-        full_text = " ".join(result)
-        return full_text
+        if not result:
+            raise ValueError("Text on the image is not recognised.")
+        return " ".join(result)
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return None
+        print(f"An error occurred: {str(e)}")
 
 
 # def extract_authority(full_text):
