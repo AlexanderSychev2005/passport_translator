@@ -71,7 +71,7 @@ def save_to_file(filename, data):
     c.drawString(250, 490, f"{data["Date of expiry"]}")
 
     c.drawString(450, 700, f"{data["Passport number"]}")
-    c.drawString(490, 520, f"{data["Authority"]}")
+    # c.drawString(490, 520, f"{data["Authority"]}")
     c.setFont("DejaVuSans", 10)
 
     c.drawString(50, 600, "")
@@ -90,7 +90,7 @@ def save_to_file(filename, data):
 
     c.drawString(370, 700, f"PASAPORT NO.:")
     c.drawString(370, 580, f"KAYIT NO.:{data["Record number"]}")
-    c.drawString(370, 520, f"DÜZENLEYEN MAKAM:")
+    # c.drawString(370, 520, f"DÜZENLEYEN MAKAM:")
 
     c.setFont("DejaVuSans", 7)
     c.drawString(50, 470, data["MRZ"][:44])
@@ -120,13 +120,14 @@ def extract_text_from_image(image_path):
         return None
 
 
-def extract_authority(full_text):
-    authority = re.search(r"(\s+\d{4}\s+)", full_text)
-    authority = authority.group(0)
-    return authority
+# def extract_authority(full_text):
+#     authority = re.search(r"(\s+\d{4}\s+)", full_text)
+#     authority = authority.group(0)
+#     return authority
 
 
 def extract_mrz(full_text):
+    full_text = full_text.replace(" ", "")
     mrz = re.search(r"(P\s*<[^\n]*\d{2})", full_text)
     mrz = mrz.group(0)
     mrz = mrz.replace(" ", "").upper()
@@ -139,10 +140,10 @@ def getData(file_path):
     if not full_text:
         print("No text found in the image.")
         return
-    authority = extract_authority(full_text)
-    if not authority:
-        print("Authority not found in the text.")
-        return
+    # authority = extract_authority(full_text)
+    # if not authority:
+    #     print("Authority not found in the text.")
+    #     return
     mrz = extract_mrz(full_text)
     if not mrz:
         print("MRZ not found in the text.")
@@ -196,7 +197,7 @@ def getData(file_path):
         "Full country": f"{country_full}",
         "Date of birth": f"{translate_date(formatted_date)}",
         "Gender": "KADIN" if gender == "F" else "ADAM",
-        "Authority": f"{authority}",
+        # "Authority": f"{authority}",
         "Date of issue": f"{translate_date(formatted_date_issue)}",
         "Date of expiry": f"{translate_date(formatted_date_exp)}",
         "Record number": f"{personal_number[:8]}-{personal_number[8:]}",
