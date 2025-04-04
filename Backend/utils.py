@@ -1,32 +1,22 @@
+import os
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 import settings
 import cv2
 import numpy as np
 from imutils.perspective import four_point_transform
 
 
-def save_upload_image(fileObj):
-    filename = fileObj.filename
-
-    name, ext = filename.split(".")
-
-    save_filename = "upload." + ext
-
-    upload_image_path = settings.join_path(settings.SAVE_DIR, save_filename)
-
-    fileObj.save(upload_image_path)
-
-    return upload_image_path
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 
 
-def array_to_json_format(numpy_array):
-    points = []
-    for pt in numpy_array.tolist():
-        points.append({"x": pt[0], "y": pt[1]})
-
-    return points
-
-
-#
 class DocumentScan:
     def __init__(self):
         pass
@@ -119,3 +109,48 @@ class DocumentScan:
         )
 
         return magic_color
+
+
+def save_upload_image(fileObj):
+    filename = fileObj.filename
+
+    name, ext = filename.split(".")
+
+    save_filename = "upload." + ext
+
+    upload_image_path = settings.join_path(settings.SAVE_DIR, save_filename)
+
+    fileObj.save(upload_image_path)
+
+    return upload_image_path
+
+
+def array_to_json_format(numpy_array):
+    points = []
+    for pt in numpy_array.tolist():
+        points.append({"x": pt[0], "y": pt[1]})
+
+    return points
+
+
+def send_mail(to_address, subject, body, from_address=EMAIL_HOST_USER):
+    msg = MIMEMultipart()
+    msg["From"] = from_address
+    msg["To"] = to_address
+    msg["Subject"] = subject
+
+    msg.attach(MIMEText(body, "plain"))
+
+    try:
+        server = smtplib.SMTP(EMAIL_HOST, int(EMAIL_PORT))
+        server.starttls()
+        server.login(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+        return True
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+        return False
+
+
+
