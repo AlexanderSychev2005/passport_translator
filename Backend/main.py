@@ -1,4 +1,6 @@
-from flask import Flask, request
+import json
+
+from flask import Flask, request, jsonify
 from flask import render_template
 import settings
 import utils
@@ -6,6 +8,7 @@ import numpy as np
 import cv2
 import passport_results  # Assuming this is a custom module for passport results
 import document_results  # Assuming this is a custom module for document results
+
 
 app = Flask(__name__)
 app.secret_key = "document_scanner_app"
@@ -120,6 +123,16 @@ def file_translation():
         translated_text=translated_text,
         html_with_entities=html_with_entities,
     )
+
+
+@app.route('/send-test-email', methods=['POST'])
+def test_email():
+    data = request.get_json()
+    to_address = data.get('to')
+    subject = data.get('subject')
+    body = data.get('body')
+    result = utils.send_mail(to_address, subject, body)
+    return jsonify(result)
 
 
 if __name__ == "__main__":
