@@ -17,6 +17,7 @@ API_KEY = os.getenv("API_KEY")
 DEEPL_API_KEY = os.getenv("DEEPL_API_KEY")
 OCR_URL = os.getenv("OCR_URL")
 
+
 # def save_html_to_pdf(source_html, output_filename):
 #     """Convert HTML content to a PDF file."""
 #     with open(output_filename, "w+b") as result_file:
@@ -66,30 +67,41 @@ def encode_image(image_path):
 
 
 def getData(image_path):
+    """Extract text from an image, translate it to English, and generate NER HTML.
+
+    Args:
+        image_path (str): Path to the image file to process.
+
+    Returns:
+        Tuple[str, str]: Translated text and the filename of the NER HTML file.
+
+    Raises:
+        ValueError: If image encoding or OCR processing fails.
+        deepl.DeepLException: If translation fails.
+    """
     base64_image = encode_image(image_path)
     client = Mistral(api_key=API_KEY)
 
-    ocr_response = client.ocr.process(
-        model="mistral-ocr-latest",
-        document={
-            "type": "image_url",
-            "image_url": f"data:image/jpeg;base64,{base64_image}",
-        },
-    )
-
-    result = ocr_response.pages[0].markdown
-
-    # nlp_result = spacy.load("uk_core_news_trf")
-    # doc_result = nlp_result(result)
-    # html_res = displacy.render(doc_result, style="ent", page=True)
-    # res_html_name = 'result_ner.html'
-    # with open(res_html_name, "w", encoding="utf-8") as f:
-    #     f.write(html_res)
+    try:
+        ocr_response = client.ocr.process(
+            model="mistral-ocr-latest",
+            document={
+                "type": "image_url",
+                "image_url": f"data:image/jpeg;base64,{base64_image}",
+            },
+        )
+        result = ocr_response.pages[0].markdown
+        print(result)
+    except Exception as e:
+        raise ValueError(f"OCR processing failed: {e}")
 
     translator = deepl.Translator(DEEPL_API_KEY)
-    translated_result = translator.translate_text(
-        result, source_lang="UK", target_lang="EN-GB"
-    ).text
+    try:
+        translated_result = translator.translate_text(
+            result, target_lang="EN-GB"
+        ).text
+    except deepl.DeepLException as e:
+        raise deepl.DeepLException(f"Translation failed: {e}")
 
     nlp_eng = spacy.load("en_core_web_trf")
     doc_eng = nlp_eng(translated_result)
@@ -97,6 +109,9 @@ def getData(image_path):
     eng_html_name = "translated_result_ner.html"
     eng_html_path = os.path.join("static", "media", eng_html_name)
     html_eng = displacy.render(doc_eng, style="ent", page=True)
+
+    os.makedirs(os.path.dirname(eng_html_path), exist_ok=True)
+
     with open(eng_html_path, "w", encoding="utf-8") as f:
         f.write(html_eng)
     # save_text_to_pdf(translated_result, "translated_result.pdf")
