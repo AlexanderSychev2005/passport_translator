@@ -47,6 +47,7 @@ def translate_date(date_str):
         return date_str
 
 
+
 def save_to_file(filename, data):
     """
     Function to save passport data to a PDF file
@@ -54,50 +55,94 @@ def save_to_file(filename, data):
     :param data: dictionary of passport data
     :return: None
     """
+    # Реєстрація шрифтів (якщо вони не зареєстровані)
+    try:
+        pdfmetrics.registerFont(TTFont('DejaVuSans', 'DejaVuSans.ttf'))
+        pdfmetrics.registerFont(TTFont('DejaVuSansBold', 'DejaVuSans-Bold.ttf'))
+    except Exception as e:
+        print(f"Помилка при реєстрації шрифтів: {e}. Переконайтесь, що файли шрифтів доступні.")
+        # Використовуємо стандартний шрифт, якщо DejaVuSans недоступний
+        pdfmetrics.registerFont(TTFont('DejaVuSans', TTFont('Helvetica', 'Helvetica')))
+        pdfmetrics.registerFont(TTFont('DejaVuSansBold', TTFont('Helvetica-Bold', 'Helvetica-Bold')))
+
+    # Створюємо PDF
     c = canvas.Canvas(filename, pagesize=A4)
+
+    # Перевірка наявності всіх ключів у словнику data
+    required_keys = [
+        "Full country", "Gender", "Surname", "Name", "Date of birth",
+        "Date of issue", "Date of expiry", "Passport number", "Country",
+        "Record number", "MRZ"
+    ]
+    for key in required_keys:
+        if key not in data:
+            raise KeyError(f"Ключ '{key}' відсутній у словнику data")
+
+    # Витягуємо значення зі словника для уникнення проблем із f-рядками
+    full_country = data["Full country"]
+    gender = data["Gender"]
+    surname = data["Surname"]
+    name = data["Name"]
+    date_of_birth = data["Date of birth"]
+    date_of_issue = data["Date of issue"]
+    date_of_expiry = data["Date of expiry"]
+    passport_number = data["Passport number"]
+    country = data["Country"]
+    record_number = data["Record number"]
+    mrz = data["MRZ"]
+
+    # Налаштування шрифтів і малювання тексту
     c.setFont("DejaVuSansBold", 14)
-    c.drawString(270, 750, data["Full country"])
+    c.drawString(270, 750, full_country)
+
     c.setFont("DejaVuSansBold", 10)
     c.drawString(50, 700, "PASAPORT")
     c.drawString(170, 700, "P")
-    c.drawString(190, 550, f"{data["Gender"]}")
 
-    c.drawString(250, 670, f"{data["Surname"]}")
-    c.drawString(250, 640, f"{data["Name"]}")
-    c.drawString(250, 610, f"{data["Full country"]}")
-    c.drawString(250, 580, f"{data["Date of birth"]}")
-    c.drawString(370, 550, f"{data["Full country"]}")
-    c.drawString(250, 520, f"{data["Date of issue"]}")
-    c.drawString(250, 490, f"{data["Date of expiry"]}")
+    # Використовуємо змінні напряму
+    c.drawString(190, 550, gender)
+    c.drawString(250, 670, surname)
+    c.drawString(250, 640, name)
+    c.drawString(250, 610, full_country)
+    c.drawString(250, 580, date_of_birth)
+    c.drawString(370, 550, full_country)
+    c.drawString(250, 520, date_of_issue)
+    c.drawString(250, 490, date_of_expiry)
+    c.drawString(450, 700, passport_number)
 
-    c.drawString(450, 700, f"{data["Passport number"]}")
-    # c.drawString(490, 520, f"{data["Authority"]}")
-    c.setFont("DejaVuSans", 10)
-
-    c.drawString(50, 600, "")
-
+    # Додаємо підписи
     c.drawString(130, 700, "TÜRÜ:")
     c.drawString(130, 670, "SOYADI:")
     c.drawString(130, 640, "ADI:")
     c.drawString(130, 610, "UYRUĞU:")
     c.drawString(130, 580, "DOĞUM TARİHİ:")
-    c.drawString(130, 550, f"CİNSİYETİ:")
+    c.drawString(130, 550, "CİNSİYETİ:")
     c.drawString(130, 520, "DÜZENLENME TARİHİ:")
     c.drawString(130, 490, "GEÇERLİLİK TARİHİ:")
 
-    c.drawString(250, 700, f"ÜLKE KODU: {data["Country"]}")
-    c.drawString(250, 550, f"DOĞUM YERİ:")
+    c.drawString(250, 700, f"ÜLKE KODU: {country}")
+    c.drawString(250, 550, "DOĞUM YERİ:")
 
-    c.drawString(370, 700, f"PASAPORT NO.:")
-    c.drawString(370, 580, f"KAYIT NO.:{data["Record number"]}")
-    # c.drawString(370, 520, f"DÜZENLEYEN MAKAM:")
+    c.drawString(370, 700, "PASAPORT NO.:")
+    c.drawString(370, 580, f"KAYIT NO.: {record_number}")
+    # c.drawString(370, 520, "DÜZENLEYEN MAKAM:")
 
+    # Обробка MRZ
     c.setFont("DejaVuSans", 7)
-    c.drawString(50, 470, data["MRZ"][:44])
-    c.drawString(50, 450, data["MRZ"][44:])
+    if len(mrz) >= 44:
+        c.drawString(50, 470, mrz[:44])
+        c.drawString(50, 450, mrz[44:])
+    else:
+        print(f"Попередження: MRZ має довжину {len(mrz)}, очікується щонайменше 44 символи.")
+        c.drawString(50, 470, mrz)
+        c.drawString(50, 450, "")
+
+    c.setFont("DejaVuSans", 10)
+    c.drawString(50, 600, "")
+
+
 
     c.save()
-
 
 def extract_text_from_image(image_path):
     try:
