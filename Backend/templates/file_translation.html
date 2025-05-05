@@ -2,11 +2,8 @@
 
 {% block body %}
     <style>
-        .highlight-changed {
-            text-decoration: underline;
-            color: #d9534f; /* Червоний, як у Bootstrap для уваги */
-            font-weight: bold;
-        }
+        .translated_text{
+         font-family: 'Roboto', sans-serif;
         .translated_text {
             font-family: 'Roboto', sans-serif;
             font-size: 18px;
@@ -134,9 +131,6 @@
         </div>
 
        <script>
-
-
-
             function saveChanges() {
                 const paragraphs = document.querySelectorAll('.translated_line');
                 let fullText = '';
