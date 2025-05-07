@@ -74,7 +74,7 @@ def scandoc():
                 message=message
             )
         except Exception as e:
-            flash(f"Error processing image: {str(e)}", "danger")
+            flash(f"Error processing image, try again!", "danger")
             return redirect(url_for("scandoc", _method="GET"))
 
     return render_template("scanerdoc.html")
@@ -117,7 +117,8 @@ def scan():
                 message=message
             )
         except Exception as e:
-            flash(f"Error processing image: {str(e)}", "danger")
+            app.logger.error(f"Error processing image: {e}")
+            flash(f"Error processing image, try again!", "danger")
             return redirect(url_for("scan", _method="GET"))
 
     return render_template("scaner.html")
@@ -146,7 +147,7 @@ def transform():
 
         return "success"
     except Exception as e:
-        flash(f"Error transforming image: {str(e)}", "danger")
+        flash(f"Error transforming image, try again!", "danger")
         return redirect(request.url)
 
 
@@ -163,7 +164,8 @@ def prediction():
         results = passport_results.getData(wrap_image_filepath)
         return render_template("prediction.html", results=results)
     except Exception as e:
-        flash(f"Error processing image: {str(e)}", "danger")
+        app.logger.error(f"Error processing image: {e}")
+        flash(f"Error processing image, try again!", "danger")
         return redirect(url_for("scan", _method="GET"))
 
 
@@ -195,7 +197,8 @@ def file_translation():
             html_filepath=html_filepath
         ))
     except Exception as e:
-        flash(f"Translation error: {str(e)}", "danger")
+        app.logger.error(f"Translation error: {e}")
+        flash(f"Translation error, try again", "danger")
         return redirect(request.url)
 
 
@@ -229,7 +232,8 @@ def file_translation_results():
         flash("File not found", "error")
         return redirect(request.url)
     except Exception as e:
-        flash(f"Error loading translation results: {str(e)}", "danger")
+        app.logger.error(f"Error loading translation results: {e}")
+        flash(f"Error loading translation results, try again!", "danger")
         return redirect(request.url)
 
 
@@ -246,7 +250,6 @@ def save_translation():
         return "No text provided", 400
 
     try:
-        # Завантажуємо попередній текст для порівняння
         current_text_path = settings.join_path(settings.MEDIA_DIR, "current_text.txt")
         previous_text = ""
         if os.path.exists(current_text_path):
@@ -341,7 +344,8 @@ def save_translation():
             html_filepath=eng_html_path
         ))
     except Exception as e:
-        flash(f"Error saving translation: {str(e)}", "danger")
+        app.logger.error(f"Error saving translation: {e}")
+        flash(f"Error saving translation, try again!", "danger")
         return redirect(request.url)
 
 
@@ -364,7 +368,8 @@ def test_email():
         result = utils.send_mail(to_address, subject, body)
         return jsonify(result)
     except Exception as e:
-        return jsonify({"error": f"Email sending failed: {str(e)}"}), HTTPStatus.INTERNAL_SERVER_ERROR
+        app.logger.error(f"Error sending email: {e}")
+        return jsonify({"error": f"Email sending failed, try again"}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 if __name__ == "__main__":

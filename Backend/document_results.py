@@ -5,52 +5,13 @@ import deepl
 import spacy
 from dotenv import load_dotenv
 from mistralai import Mistral
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.utils import simpleSplit
-from reportlab.pdfgen import canvas
 from spacy import displacy
-from xhtml2pdf import pisa
 
 load_dotenv()
 
 API_KEY = os.getenv("API_KEY")
 DEEPL_API_KEY = os.getenv("DEEPL_API_KEY")
 OCR_URL = os.getenv("OCR_URL")
-
-
-# def save_html_to_pdf(source_html, output_filename):
-#     """Convert HTML content to a PDF file."""
-#     with open(output_filename, "w+b") as result_file:
-#         pisa_status = pisa.CreatePDF(source_html, dest=result_file)
-#     return pisa_status.err
-#
-# def save_text_to_pdf(text, filename):
-#     c = canvas.Canvas(filename, pagesize=A4)
-#     width, height = A4
-#
-#     margin_x = 50
-#     margin_y = height - 50
-#     line_height = 16
-#
-#     c.setFont("Times-Roman", 12)
-#     paragraphs = text.split("\n")
-#
-#     for paragraph in paragraphs:
-#         if not paragraph.strip():
-#             margin_y -= line_height
-#             continue
-#
-#         lines = simpleSplit(paragraph, "Times-Roman", 12, width - 2 * margin_x)
-#
-#         for line in lines:
-#             c.drawString(margin_x, margin_y, line)
-#             margin_y -= line_height
-#             if margin_y < 50:
-#                 c.showPage()
-#                 c.setFont("Times-Roman", 12)
-#                 margin_y = height - 50
-#
-#     c.save()
 
 
 def encode_image(image_path):
@@ -80,6 +41,8 @@ def getData(image_path):
         deepl.DeepLException: If translation fails.
     """
     base64_image = encode_image(image_path)
+    if base64_image is None:
+        raise ValueError("Image encoding failed.")
     client = Mistral(api_key=API_KEY)
 
     try:
@@ -114,6 +77,4 @@ def getData(image_path):
 
     with open(eng_html_path, "w", encoding="utf-8") as f:
         f.write(html_eng)
-    # save_text_to_pdf(translated_result, "translated_result.pdf")
-    # save_html_to_pdf(html_eng, "result_ner.pdf")
     return translated_result, eng_html_name
