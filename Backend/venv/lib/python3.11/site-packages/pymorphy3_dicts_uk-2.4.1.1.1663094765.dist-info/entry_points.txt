@@ -1,0 +1,3 @@
+[pymorphy3_dicts]
+uk = pymorphy3_dicts_uk
+

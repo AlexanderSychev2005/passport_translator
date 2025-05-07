@@ -1,0 +1,57 @@
+Metadata-Version: 2.1
+Name: curated-tokenizers
+Version: 0.0.9
+Summary: Lightweight piece tokenization library
+Home-page: https://github.com/explosion/curated-tokenizers
+Author: Explosion
+Author-email: contact@explosion.ai
+License: MIT
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Programming Language :: Cython
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Topic :: Scientific/Engineering
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: regex >=2022
+
+# 🥢 Curated Tokenizers
+
+This Python library provides word-/sentencepiece tokenizers. The following
+types of tokenizers are currenty supported:
+
+| Tokenizer | Binding       | Example model |
+| --------- | ------------- | ------------- |
+| BPE       | sentencepiece |               |
+| Byte BPE  | Native        | RoBERTa/GPT-2 |
+| Unigram   | sentencepiece | XLM-RoBERTa   |
+| Wordpiece | Native        | BERT          |
+
+## ⚠️ Warning: experimental package
+
+This package is experimental and it is likely that the APIs will change in
+incompatible ways.
+
+## ⏳ Install
+
+Curated tokenizers is availble through PyPI:
+
+```bash
+pip install curated_tokenizers
+```
+
+## 🚀 Quickstart
+
+The best way to get started with curated tokenizers is through the
+[`curated-transformers`](https://github.com/explosion/curated-transformers)
+library. `curated-transformers` also provides functionality to load tokenization
+models from Huggingface Hub.

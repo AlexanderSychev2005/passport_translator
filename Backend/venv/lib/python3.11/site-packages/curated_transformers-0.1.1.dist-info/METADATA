@@ -1,0 +1,39 @@
+Metadata-Version: 2.1
+Name: curated-transformers
+Version: 0.1.1
+Summary: Curated transformer models
+Home-page: https://github.com/explosion/curated-transformers
+Author: Explosion
+Author-email: contact@explosion.ai
+License: MIT
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: torch (>=1.12.0)
+
+# 🤖 Curated transformers
+
+This Python package provides a curated set of PyTorch transformer models,
+composed of reusable modules. Curated transformers currently supports the
+following model types:
+
+- ALBERT
+- BERT
+- CamemBERT
+- RoBERTa
+- XLM-RoBERTa
+
+spaCy integration for curated transformers is provided by the
+[`spacy-curated-transformers`](https://github.com/explosion/spacy-curated-transformers)
+package.
+
+## ⚠️ Warning: experimental package
+
+This package is experimental and it is possible that models and APIs will
+change in incompatible ways.
+
+## ⏳ Install
+
+```bash
+pip install curated-transformers
+```

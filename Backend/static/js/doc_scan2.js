@@ -155,7 +155,6 @@ function randomFromTo(from, to) {
 // AJAX
 $(document).ready(function(){
   $("#sendData").click(function(){
-      $("#loader").html('<img src="/static/images/scan.gif">');
       $.ajax({
         type : 'POST',
         url : "/transform",

@@ -235,12 +235,7 @@ def file_translation_results():
 
 @app.route("/save_translation", methods=["POST"])
 def save_translation():
-    """
-    Save edited translation text with NER visualization.
 
-    Returns:
-        Redirect to file_translation_results with updated data.
-    """
     edited_text = request.form.get("edited_text")
     if not edited_text:
         return "No text provided", 400

@@ -1,0 +1,84 @@
+[
+  [
+    "language_code",
+    "uk"
+  ],
+  [
+    "format_version",
+    "2.4"
+  ],
+  [
+    "pymorphy2_version",
+    "1.1.0"
+  ],
+  [
+    "compiled_at",
+    "2022-09-13T18:45:24.998984"
+  ],
+  [
+    "source",
+    "opencorpora.org"
+  ],
+  [
+    "source_version",
+    "0.2"
+  ],
+  [
+    "source_revision",
+    "1"
+  ],
+  [
+    "source_lexemes_count",
+    417330
+  ],
+  [
+    "source_links_count",
+    0
+  ],
+  [
+    "gramtab_length",
+    4074
+  ],
+  [
+    "gramtab_formats",
+    {
+      "opencorpora-ext": "gramtab-opencorpora-ext.json",
+      "opencorpora-int": "gramtab-opencorpora-int.json"
+    }
+  ],
+  [
+    "paradigms_length",
+    5008
+  ],
+  [
+    "suffixes_length",
+    10786
+  ],
+  [
+    "words_dawg_length",
+    6543907
+  ],
+  [
+    "compile_options",
+    {
+      "min_ending_freq": 2,
+      "min_paradigm_popularity": 3,
+      "max_suffix_length": 5,
+      "paradigm_prefixes": [
+        "",
+        "най",
+        "якнай",
+        "щонай"
+      ]
+    }
+  ],
+  [
+    "prediction_suffixes_dawg_lengths",
+    [
+      588356,
+      0,
+      0,
+      0
+    ]
+  ]
+]
