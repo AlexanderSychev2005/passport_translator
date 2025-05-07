@@ -39,13 +39,17 @@ MONTH_TRANSLATION = {
 
 
 def translate_date(date_str):
+    """
+    Function to translate date from English to Turkish
+    :param date_str: date string
+    :return: date string in Turkish
+    """
     try:
         day, month, year = date_str.split()
         month_turkish = MONTH_TRANSLATION.get(month, month)
         return f"{day} {month_turkish} {year}"
     except ValueError:
         return date_str
-
 
 
 def save_to_file(filename, data):
@@ -55,20 +59,15 @@ def save_to_file(filename, data):
     :param data: dictionary of passport data
     :return: None
     """
-    # Реєстрація шрифтів (якщо вони не зареєстровані)
     try:
         pdfmetrics.registerFont(TTFont('DejaVuSans', 'DejaVuSans.ttf'))
         pdfmetrics.registerFont(TTFont('DejaVuSansBold', 'DejaVuSans-Bold.ttf'))
     except Exception as e:
-        print(f"Помилка при реєстрації шрифтів: {e}. Переконайтесь, що файли шрифтів доступні.")
-        # Використовуємо стандартний шрифт, якщо DejaVuSans недоступний
         pdfmetrics.registerFont(TTFont('DejaVuSans', TTFont('Helvetica', 'Helvetica')))
         pdfmetrics.registerFont(TTFont('DejaVuSansBold', TTFont('Helvetica-Bold', 'Helvetica-Bold')))
 
-    # Створюємо PDF
     c = canvas.Canvas(filename, pagesize=A4)
 
-    # Перевірка наявності всіх ключів у словнику data
     required_keys = [
         "Full country", "Gender", "Surname", "Name", "Date of birth",
         "Date of issue", "Date of expiry", "Passport number", "Country",
@@ -76,9 +75,8 @@ def save_to_file(filename, data):
     ]
     for key in required_keys:
         if key not in data:
-            raise KeyError(f"Ключ '{key}' відсутній у словнику data")
+            raise KeyError(f"Key '{key}' is missing in the data dictionary.")
 
-    # Витягуємо значення зі словника для уникнення проблем із f-рядками
     full_country = data["Full country"]
     gender = data["Gender"]
     surname = data["Surname"]
@@ -91,7 +89,6 @@ def save_to_file(filename, data):
     record_number = data["Record number"]
     mrz = data["MRZ"]
 
-    # Налаштування шрифтів і малювання тексту
     c.setFont("DejaVuSansBold", 14)
     c.drawString(270, 750, full_country)
 
@@ -99,7 +96,6 @@ def save_to_file(filename, data):
     c.drawString(50, 700, "PASAPORT")
     c.drawString(170, 700, "P")
 
-    # Використовуємо змінні напряму
     c.drawString(190, 550, gender)
     c.drawString(250, 670, surname)
     c.drawString(250, 640, name)
@@ -110,7 +106,6 @@ def save_to_file(filename, data):
     c.drawString(250, 490, date_of_expiry)
     c.drawString(450, 700, passport_number)
 
-    # Додаємо підписи
     c.drawString(130, 700, "TÜRÜ:")
     c.drawString(130, 670, "SOYADI:")
     c.drawString(130, 640, "ADI:")
@@ -125,24 +120,20 @@ def save_to_file(filename, data):
 
     c.drawString(370, 700, "PASAPORT NO.:")
     c.drawString(370, 580, f"KAYIT NO.: {record_number}")
-    # c.drawString(370, 520, "DÜZENLEYEN MAKAM:")
 
-    # Обробка MRZ
     c.setFont("DejaVuSans", 7)
     if len(mrz) >= 44:
         c.drawString(50, 470, mrz[:44])
         c.drawString(50, 450, mrz[44:])
     else:
-        print(f"Попередження: MRZ має довжину {len(mrz)}, очікується щонайменше 44 символи.")
         c.drawString(50, 470, mrz)
         c.drawString(50, 450, "")
 
     c.setFont("DejaVuSans", 10)
     c.drawString(50, 600, "")
 
-
-
     c.save()
+
 
 def extract_text_from_image(image_path):
     try:
@@ -165,12 +156,6 @@ def extract_text_from_image(image_path):
         print(f"An error occurred: {str(e)}")
 
 
-# def extract_authority(full_text):
-#     authority = re.search(r"(\s+\d{4}\s+)", full_text)
-#     authority = authority.group(0)
-#     return authority
-
-
 def extract_mrz(full_text):
     full_text = full_text.replace(" ", "")
     mrz = re.search(r"(P\s*<[^\n]*\d{2})", full_text)
@@ -181,73 +166,69 @@ def extract_mrz(full_text):
 
 
 def getData(file_path):
-    full_text = extract_text_from_image(file_path)
-    if not full_text:
-        print("No text found in the image.")
-        return
-    # authority = extract_authority(full_text)
-    # if not authority:
-    #     print("Authority not found in the text.")
-    #     return
-    mrz = extract_mrz(full_text)
-    if not mrz:
-        print("MRZ not found in the text.")
-        return
+    try:
+        full_text = extract_text_from_image(file_path)
+        if not full_text:
+            raise ValueError("No text found in the image.")
+        mrz = extract_mrz(full_text)
+        if not mrz:
+            raise ValueError("No MRZ found in the text.")
 
-    mrz_pattern = re.compile(
-        r"P<(?P<country>[A-Z]{3})"
-        r"(?P<surname>[A-Z]+)<<(?P<name>[A-Z]+)<+"
-        r"(?P<passport_number>[A-Z0-9]{8})<+"
-        r"."
-        r"(?P<nationality>[A-Z]{3})"
-        r"(?P<birth_date>\d{6})"
-        r"."
-        r"(?P<gender>[MF])"
-        r"(?P<expiry_date>\d{6})"
-        r"."
-        r"(?P<personal_number>[A-Z0-9]{13})"
-    )
-    match = mrz_pattern.search(mrz)
+        mrz_pattern = re.compile(
+            r"P<(?P<country>[A-Z]{3})"
+            r"(?P<surname>[A-Z]+)<<(?P<name>[A-Z]+)<+"
+            r"(?P<passport_number>[A-Z0-9]{8})<+"
+            r"."
+            r"(?P<nationality>[A-Z]{3})"
+            r"(?P<birth_date>\d{6})"
+            r"."
+            r"(?P<gender>[MF])"
+            r"(?P<expiry_date>\d{6})"
+            r"."
+            r"(?P<personal_number>[A-Z0-9]{13})"
+        )
+        match = mrz_pattern.search(mrz)
 
-    if match:
-        country = match.group("country")
-        name = match.group("name")
-        surname = match.group("surname")
-        passport_number = match.group("passport_number")
-        nationality = match.group("nationality")
-        birth_date = match.group("birth_date")
-        gender = match.group("gender")
-        expiry_date = match.group("expiry_date")
-        personal_number = match.group("personal_number")
-    else:
-        print("No match found in MRZ.")
-        return
+        if match:
+            country = match.group("country")
+            name = match.group("name")
+            surname = match.group("surname")
+            passport_number = match.group("passport_number")
+            nationality = match.group("nationality")
+            birth_date = match.group("birth_date")
+            gender = match.group("gender")
+            expiry_date = match.group("expiry_date")
+            personal_number = match.group("personal_number")
+        else:
+            raise ValueError("MRZ format is incorrect.")
 
-    date_obj = datetime.strptime(birth_date, "%y%m%d")
-    formatted_date = date_obj.strftime("%d %b %Y")
+        date_obj = datetime.strptime(birth_date, "%y%m%d")
+        formatted_date = date_obj.strftime("%d %b %Y")
 
-    date_obj_exp = datetime.strptime(expiry_date, "%y%m%d")
-    formatted_date_exp = date_obj_exp.strftime("%d %b %Y")
+        date_obj_exp = datetime.strptime(expiry_date, "%y%m%d")
+        formatted_date_exp = date_obj_exp.strftime("%d %b %Y")
 
-    issue_date_obj = date_obj_exp.replace(year=date_obj_exp.year - 10)
-    formatted_date_issue = issue_date_obj.strftime("%d %b %Y")
+        issue_date_obj = date_obj_exp.replace(year=date_obj_exp.year - 10)
+        formatted_date_issue = issue_date_obj.strftime("%d %b %Y")
 
-    country_full = COUNTRIES_TRANSLATION[country]
-    parsed_results = {
-        "Country": f"{country}",
-        "Surname": f"{surname}",
-        "Name": f"{name}",
-        "Passport number": f"{passport_number}",
-        "Nationality": f"{nationality}",
-        "Full country": f"{country_full}",
-        "Date of birth": f"{translate_date(formatted_date)}",
-        "Gender": "KADIN" if gender == "F" else "ADAM",
-        # "Authority": f"{authority}",
-        "Date of issue": f"{translate_date(formatted_date_issue)}",
-        "Date of expiry": f"{translate_date(formatted_date_exp)}",
-        "Record number": f"{personal_number[:8]}-{personal_number[8:]}",
-        "MRZ": mrz,
-    }
-    file_path = "./static/media/passport_data.pdf"
-    save_to_file(file_path, parsed_results)
-    return file_path
+        country_full = COUNTRIES_TRANSLATION.get(country, country)
+        parsed_results = {
+            "Country": f"{country}",
+            "Surname": f"{surname}",
+            "Name": f"{name}",
+            "Passport number": f"{passport_number}",
+            "Nationality": f"{nationality}",
+            "Full country": f"{country_full}",
+            "Date of birth": f"{translate_date(formatted_date)}",
+            "Gender": "KADIN" if gender == "F" else "ADAM",
+            "Date of issue": f"{translate_date(formatted_date_issue)}",
+            "Date of expiry": f"{translate_date(formatted_date_exp)}",
+            "Record number": f"{personal_number[:8]}-{personal_number[8:]}",
+            "MRZ": mrz,
+        }
+        file_path = "./static/media/passport_data.pdf"
+        save_to_file(file_path, parsed_results)
+        return file_path
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return None

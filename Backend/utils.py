@@ -8,7 +8,6 @@ import cv2
 import numpy as np
 from imutils.perspective import four_point_transform
 
-
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
 EMAIL_HOST = os.getenv("EMAIL_HOST")
 EMAIL_PORT = os.getenv("EMAIL_PORT")
@@ -66,7 +65,6 @@ class DocumentScan:
         cv2.imwrite(RESIZE_IMAGE_PATH, img_re)
 
         try:
-
             detail = cv2.detailEnhance(img_re, sigma_s=20, sigma_r=0.15)
             gray = cv2.cvtColor(detail, cv2.COLOR_BGR2GRAY)  # GRAYSCALE IMAGE
             blur = cv2.GaussianBlur(gray, (5, 5), 0)
@@ -83,14 +81,15 @@ class DocumentScan:
             )
 
             contours = sorted(contours, key=cv2.contourArea, reverse=True)
+            four_points = None
             for contour in contours:
                 peri = cv2.arcLength(contour, True)
                 approx = cv2.approxPolyDP(contour, 0.02 * peri, True)
-
                 if len(approx) == 4:
                     four_points = np.squeeze(approx)
                     break
-
+            if four_points is None:
+                raise ValueError("Could not detect document boundary")
             return four_points, self.size
 
         except:
@@ -151,6 +150,3 @@ def send_mail(to_address, subject, body, from_address=EMAIL_HOST_USER):
     except Exception as e:
         print(f"Failed to send email: {e}")
         return False
-
-
-
