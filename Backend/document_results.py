@@ -54,7 +54,6 @@ def getData(image_path):
             },
         )
         result = ocr_response.pages[0].markdown
-        print(result)
     except Exception as e:
         raise ValueError(f"OCR processing failed: {e}")
 
@@ -65,8 +64,10 @@ def getData(image_path):
         ).text
     except deepl.DeepLException as e:
         raise deepl.DeepLException(f"Translation failed: {e}")
-
-    nlp_eng = spacy.load("en_core_web_trf")
+    try:
+        nlp_eng = spacy.load("en_core_web_trf")
+    except Exception as e:
+        raise ValueError(f"Failed to load spaCy model: {e}")
     doc_eng = nlp_eng(translated_result)
 
     eng_html_name = "translated_result_ner.html"
