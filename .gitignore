@@ -5,6 +5,6 @@ venv/
 __pycache__/
 /media/
 /node_modules/
-Backend/venv/
+
 *.pyc
 *.log
