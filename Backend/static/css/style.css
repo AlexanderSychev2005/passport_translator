@@ -1919,6 +1919,10 @@ body.no-scroll {
     width: 100%;
   }
 }
-
+.container-buttons{
+  display: flex;
+  justify-content: center;
+  gap:2.5rem;
+}
 
 /*# sourceMappingURL=style.css.map */
