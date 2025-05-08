@@ -28,6 +28,7 @@ DEFAULT_POINTS = [
     {"x": 10, "y": 10},
 ]
 
+
 @app.route("/")
 def index():
     """Render the homepage of the document scanner application."""
@@ -63,15 +64,12 @@ def scandoc():
                     "scanerdoc.html",
                     points=DEFAULT_POINTS,
                     fileupload=True,
-                    message=message
+                    message=message,
                 )
             points = utils.array_to_json_format(four_points)
             message = "Located the Coordinates of Document"
             return render_template(
-                "scanerdoc.html",
-                points=points,
-                fileupload=True,
-                message=message
+                "scanerdoc.html", points=points, fileupload=True, message=message
             )
         except Exception as e:
             flash(f"Error processing image, try again!", "danger")
@@ -105,16 +103,13 @@ def scan():
                     "scaner.html",
                     points=DEFAULT_POINTS,
                     fileupload=True,
-                    message=message
+                    message=message,
                 )
 
             points = utils.array_to_json_format(four_points)
             message = "Located the Coordinates of Document"
             return render_template(
-                "scaner.html",
-                points=points,
-                fileupload=True,
-                message=message
+                "scaner.html", points=points, fileupload=True, message=message
             )
         except Exception as e:
             app.logger.error(f"Error processing image: {e}")
@@ -179,7 +174,9 @@ def file_translation():
     """
     wrap_image_filepath = settings.join_path(settings.MEDIA_DIR, "magic_color.jpg")
     try:
-        translated_text, html_with_entities_name = document_results.getData(wrap_image_filepath)
+        translated_text, html_with_entities_name = document_results.getData(
+            wrap_image_filepath
+        )
         html_filepath = settings.join_path(settings.MEDIA_DIR, html_with_entities_name)
         # Зберігаємо початковий текст у current_text.txt
         current_text_path = settings.join_path(settings.MEDIA_DIR, "current_text.txt")
@@ -191,15 +188,17 @@ def file_translation():
         with open(changelog_path, "w", encoding="utf-8") as f:
             f.write("")
 
-        return redirect(url_for(
-            "file_translation_results",
-            translated_text=translated_text,
-            html_filepath=html_filepath
-        ))
+        return redirect(
+            url_for(
+                "file_translation_results",
+                translated_text=translated_text,
+                html_filepath=html_filepath,
+            )
+        )
     except Exception as e:
         app.logger.error(f"Translation error: {e}")
         flash(f"Translation error, try again", "danger")
-        return redirect(request.url)
+        return redirect(url_for("scandoc", _method="GET"))
 
 
 @app.route("/file_translation_results")
@@ -226,7 +225,7 @@ def file_translation_results():
             "file_translation.html",
             translated_text=translated_text,
             html_with_entities=html_with_entities,
-            changelog=changelog_content
+            changelog=changelog_content,
         )
     except FileNotFoundError:
         flash("File not found", "error")
@@ -239,7 +238,12 @@ def file_translation_results():
 
 @app.route("/save_translation", methods=["POST"])
 def save_translation():
+    """
+    Save edited translation text with NER visualization.
 
+    Returns:
+        Redirect to file_translation_results with updated data.
+    """
     edited_text = request.form.get("edited_text")
     if not edited_text:
         return "No text provided", 400
@@ -251,78 +255,81 @@ def save_translation():
             with open(current_text_path, "r", encoding="utf-8") as f:
                 previous_text = f.read().strip()
 
-        # Зберігаємо поточний текст у current_text.txt
         with open(current_text_path, "w", encoding="utf-8") as f:
             f.write(edited_text)
 
-        # Формуємо запис у журнал змін
         changelog_path = settings.join_path(settings.MEDIA_DIR, "changelog.md")
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         changelog_entry = f"<h2>Change on {current_time}</h2>\n"
 
-        # Порівнюємо тексти
-        previous_sentences = re.split(r'(?<=[.!?])\s+', previous_text.strip()) if previous_text else []
-        new_sentences = re.split(r'(?<=[.!?])\s+', edited_text.strip())
+        previous_sentences = (
+            re.split(r"(?<=[.!?])\s+", previous_text.strip()) if previous_text else []
+        )
+        new_sentences = re.split(r"(?<=[.!?])\s+", edited_text.strip())
 
-        # Додаємо речення до списків для порівняння
         max_len = max(len(previous_sentences), len(new_sentences))
         previous_sentences.extend([""] * (max_len - len(previous_sentences)))
         new_sentences.extend([""] * (max_len - len(new_sentences)))
 
-        # Порівнюємо речення
         changed = False
         for prev_sent, new_sent in zip(previous_sentences, new_sentences):
-            # Нормалізуємо речення перед порівнянням
-            prev_sent_normalized = " ".join(prev_sent.strip().split()) if prev_sent else ""
+            prev_sent_normalized = (
+                " ".join(prev_sent.strip().split()) if prev_sent else ""
+            )
             new_sent_normalized = " ".join(new_sent.strip().split()) if new_sent else ""
 
-            # Перевіряємо, чи є різниця між реченнями
-            if prev_sent_normalized != new_sent_normalized and prev_sent_normalized and new_sent_normalized:
+            if (
+                prev_sent_normalized != new_sent_normalized
+                and prev_sent_normalized
+                and new_sent_normalized
+            ):
                 changed = True
-                # Порівнюємо слова в змінених реченнях
                 prev_words = prev_sent.split()
                 new_words = new_sent.split()
                 differ = difflib.Differ()
                 diff = list(differ.compare(prev_words, new_words))
 
-                # Формуємо речення з виділеними змінами
                 highlighted_prev = []
                 highlighted_new = []
                 for word in diff:
                     word_text = word[2:]
-                    if word.startswith("  "):  # Незмінене слово
+                    if word.startswith("  "):
                         highlighted_prev.append(word_text)
                         highlighted_new.append(word_text)
-                    elif word.startswith("- "):  # Видалене слово
-                        highlighted_prev.append(f'<span class="highlight-changed">{word_text}</span>')
-                    elif word.startswith("+ "):  # Додане слово
-                        highlighted_new.append(f'<span class="highlight-changed">{word_text}</span>')
+                    elif word.startswith("- "):
+                        highlighted_prev.append(
+                            f'<span class="highlight-changed">{word_text}</span>'
+                        )
+                    elif word.startswith("+ "):
+                        highlighted_new.append(
+                            f'<span class="highlight-changed">{word_text}</span>'
+                        )
 
-                # Додаємо змінені речення до журналу
-                changelog_entry += "<h3>Previous Sentence:</h3>\n<p>" + " ".join(highlighted_prev) + "</p>\n"
-                changelog_entry += "<h3>New Sentence:</h3>\n<p>" + " ".join(highlighted_new) + "</p>\n"
+                changelog_entry += (
+                    "<h3>Previous Sentence:</h3>\n<p>"
+                    + " ".join(highlighted_prev)
+                    + "</p>\n"
+                )
+                changelog_entry += (
+                    "<h3>New Sentence:</h3>\n<p>" + " ".join(highlighted_new) + "</p>\n"
+                )
 
-        # Якщо змін не було, додаємо відповідне повідомлення
         if not changed:
-            changelog_entry = ""  # Не додаємо запис, якщо змін немає
+            changelog_entry = ""
 
-        # Читаємо існуючий журнал змін
         existing_changelog = ""
         if os.path.exists(changelog_path):
             with open(changelog_path, "r", encoding="utf-8") as f:
                 existing_changelog = f.read()
 
-        # Додаємо новий запис зверху, лише якщо є зміни
         if changelog_entry:
             updated_changelog = changelog_entry + "\n" + existing_changelog
         else:
             updated_changelog = existing_changelog
 
-        # Перезаписуємо журнал змін
         with open(changelog_path, "w", encoding="utf-8") as f:
             f.write(updated_changelog)
 
-        # Зберігаємо оновлений текст із NER
         nlp_eng = spacy.load("en_core_web_trf")
         doc_eng = nlp_eng(edited_text)
 
@@ -333,18 +340,20 @@ def save_translation():
         with open(eng_html_path, "w", encoding="utf-8") as f:
             f.write(html_eng)
 
-        return redirect(url_for(
-            "file_translation_results",
-            translated_text=edited_text,
-            html_filepath=eng_html_path
-        ))
+        return redirect(
+            url_for(
+                "file_translation_results",
+                translated_text=edited_text,
+                html_filepath=eng_html_path,
+            )
+        )
     except Exception as e:
         app.logger.error(f"Error saving translation: {e}")
         flash(f"Error saving translation, try again!", "danger")
         return redirect(request.url)
 
 
-@app.route('/send-test-email', methods=['POST'])
+@app.route("/send-test-email", methods=["POST"])
 def test_email():
     """
     Send a test email based on provided JSON data.
@@ -364,7 +373,10 @@ def test_email():
         return jsonify(result)
     except Exception as e:
         app.logger.error(f"Error sending email: {e}")
-        return jsonify({"error": f"Email sending failed, try again"}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return (
+            jsonify({"error": f"Email sending failed, try again"}),
+            HTTPStatus.INTERNAL_SERVER_ERROR,
+        )
 
 
 if __name__ == "__main__":

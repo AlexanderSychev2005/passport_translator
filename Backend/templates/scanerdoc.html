@@ -53,6 +53,18 @@
 </head>
 
 <body>
+  <div id="flash-container" class="position-fixed top-0 start-50 translate-middle-x mt-4">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show text-center fs-5 py-4 shadow-lg" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
   <header class="header">
     <nav class="nav">
       <img
@@ -124,7 +136,6 @@
         document.getElementById('loader').style.display = 'flex';
       });
     });
-     // Функція для показу лоадера
     function showLoader() {
       document.getElementById('loader').style.display = 'flex';
 console.log("loading")

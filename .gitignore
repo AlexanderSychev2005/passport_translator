@@ -1,5 +1,10 @@
-.venv
+.DS_Store
+venv/
 .idea
 .env
 __pycache__/
-.media
+/media/
+/node_modules/
+Backend/venv/
+*.pyc
+*.log

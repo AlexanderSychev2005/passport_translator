@@ -28,7 +28,7 @@
       width: 100%;
       height: 100%;
       background: rgba(76, 73, 73, 0.6);
-      display: none; /* Спочатку прихований */
+      display: none;
       justify-content: center;
       align-items: center;
       z-index: 1000;
@@ -40,10 +40,10 @@
       width: 130px;
       height: 130px;
       animation: spin 1s linear infinite;
-      position: absolute; /* Правильне позиціонування */
+      position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%); /* Центрування */
+      transform: translate(-50%, -50%);
     }
     @keyframes spin {
       0% { transform: translate(-50%, -50%) rotate(0deg); }
@@ -124,9 +124,7 @@
   </div>
 
   <script>
-    // Показуємо ім'я файлу після вибору
     document.addEventListener("DOMContentLoaded", function () {
-      // Скидаємо стан лоадера при завантаженні сторінки
       document.getElementById('loader').style.display = 'none';
 
       document.getElementById("file-upload").addEventListener("change", function () {
@@ -135,7 +133,6 @@
       });
     });
 
-    // Функція для показу лоадера
     function showLoader() {
       document.getElementById('loader').style.display = 'flex';
     }
