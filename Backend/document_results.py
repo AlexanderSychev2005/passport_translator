@@ -59,9 +59,7 @@ def getData(image_path):
 
     translator = deepl.Translator(DEEPL_API_KEY)
     try:
-        translated_result = translator.translate_text(
-            result, target_lang="EN-GB"
-        ).text
+        translated_result = translator.translate_text(result, target_lang="EN-GB").text
     except deepl.DeepLException as e:
         raise deepl.DeepLException(f"Translation failed: {e}")
     try:

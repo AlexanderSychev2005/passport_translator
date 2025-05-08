@@ -60,18 +60,28 @@ def save_to_file(filename, data):
     :return: None
     """
     try:
-        pdfmetrics.registerFont(TTFont('DejaVuSans', 'DejaVuSans.ttf'))
-        pdfmetrics.registerFont(TTFont('DejaVuSansBold', 'DejaVuSans-Bold.ttf'))
+        pdfmetrics.registerFont(TTFont("DejaVuSans", "DejaVuSans.ttf"))
+        pdfmetrics.registerFont(TTFont("DejaVuSansBold", "DejaVuSans-Bold.ttf"))
     except Exception as e:
-        pdfmetrics.registerFont(TTFont('DejaVuSans', TTFont('Helvetica', 'Helvetica')))
-        pdfmetrics.registerFont(TTFont('DejaVuSansBold', TTFont('Helvetica-Bold', 'Helvetica-Bold')))
+        pdfmetrics.registerFont(TTFont("DejaVuSans", TTFont("Helvetica", "Helvetica")))
+        pdfmetrics.registerFont(
+            TTFont("DejaVuSansBold", TTFont("Helvetica-Bold", "Helvetica-Bold"))
+        )
 
     c = canvas.Canvas(filename, pagesize=A4)
 
     required_keys = [
-        "Full country", "Gender", "Surname", "Name", "Date of birth",
-        "Date of issue", "Date of expiry", "Passport number", "Country",
-        "Record number", "MRZ"
+        "Full country",
+        "Gender",
+        "Surname",
+        "Name",
+        "Date of birth",
+        "Date of issue",
+        "Date of expiry",
+        "Passport number",
+        "Country",
+        "Record number",
+        "MRZ",
     ]
     for key in required_keys:
         if key not in data:

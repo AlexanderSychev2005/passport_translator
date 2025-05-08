@@ -17,7 +17,6 @@ box-sizing: border-box;
 body {
     font-family: "Inter", sans-serif;
     color:#343a40;
-    /*border-bottom: 8px solid #087f5b;*/
 }
 .accordion{
     width:700px;
@@ -43,7 +42,6 @@ body {
     font-size: 24px;
     font-weight: bold;
     color: #000;
-   /* color:#087f5b;*/
 }
 .number{
     color:#ced4da;
@@ -93,7 +91,7 @@ body {
     }
     to {
         opacity: 1;
-        max-height: 500px; /* Достатньо для вмісту */
+        max-height: 500px;
     }
 }
 
@@ -125,7 +123,7 @@ body {
 }
 
 .open .icon-1 {
-    transform: rotate(180deg); /* Перевертаємо іконку */
+    transform: rotate(180deg);
 }
 
     </style>
@@ -139,14 +137,12 @@ body {
                     const isOpen = this.classList.contains("open");
         
                     if (isOpen) {
-                        hiddenBox.classList.add("closing"); // Запускаємо анімацію закриття
+                        hiddenBox.classList.add("closing");
                         
                             this.classList.remove("open");
                             hiddenBox.classList.remove("closing");
                             hiddenBox.style.display = "none";
-                         // Час відповідає анімації у CSS (0.5s)
                     } else {
-                        // Закриваємо всі відкриті елементи
                         accordionItems.forEach(el => {
                             const otherBox = el.querySelector(".hidden-box");
                             if (el.classList.contains("open")) {

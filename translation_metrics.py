@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 from nltk.translate.meteor_score import meteor_score
 
 nltk.download("wordnet")
-matplotlib.use('TkAgg')
+matplotlib.use("TkAgg")
 
 # def translate_marian(sentences, model_name='Helsinki-NLP/opus-mt-en-uk'):
 #     tokenizer = MarianTokenizer.from_pretrained(model_name)
@@ -96,7 +96,7 @@ metrics = {
     "Google": google_scores,
 }
 
-labels = ['BLEU', 'METEOR', 'BERTScore']
+labels = ["BLEU", "METEOR", "BERTScore"]
 n = len(labels)
 
 
@@ -105,20 +105,20 @@ angles += angles[:1]
 
 fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
 
-values_deepl = metrics['DeepL']
+values_deepl = metrics["DeepL"]
 values_deepl += values_deepl[:1]
-ax.plot(angles, values_deepl, linewidth=2, linestyle='solid', label='DeepL')
-ax.fill(angles, values_deepl, 'b', alpha=0.1)
+ax.plot(angles, values_deepl, linewidth=2, linestyle="solid", label="DeepL")
+ax.fill(angles, values_deepl, "b", alpha=0.1)
 
-values_google = metrics['Google']
+values_google = metrics["Google"]
 values_google += values_google[:1]
-ax.plot(angles, values_google, linewidth=2, linestyle='solid', label='Google')
-ax.fill(angles, values_google, 'r', alpha=0.1)
+ax.plot(angles, values_google, linewidth=2, linestyle="solid", label="Google")
+ax.fill(angles, values_google, "r", alpha=0.1)
 
 ax.set_xticks(angles[:-1])
 ax.set_xticklabels(labels)
 
-plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
+plt.legend(loc="upper right", bbox_to_anchor=(0.1, 0.1))
 
 plt.title("Translation metrics comparison")
 plt.show()

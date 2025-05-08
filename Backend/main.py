@@ -28,6 +28,7 @@ DEFAULT_POINTS = [
     {"x": 10, "y": 10},
 ]
 
+
 @app.route("/")
 def index():
     """Render the homepage of the document scanner application."""
@@ -63,15 +64,12 @@ def scandoc():
                     "scanerdoc.html",
                     points=DEFAULT_POINTS,
                     fileupload=True,
-                    message=message
+                    message=message,
                 )
             points = utils.array_to_json_format(four_points)
             message = "Located the Coordinates of Document"
             return render_template(
-                "scanerdoc.html",
-                points=points,
-                fileupload=True,
-                message=message
+                "scanerdoc.html", points=points, fileupload=True, message=message
             )
         except Exception as e:
             flash(f"Error processing image, try again!", "danger")
@@ -105,16 +103,13 @@ def scan():
                     "scaner.html",
                     points=DEFAULT_POINTS,
                     fileupload=True,
-                    message=message
+                    message=message,
                 )
 
             points = utils.array_to_json_format(four_points)
             message = "Located the Coordinates of Document"
             return render_template(
-                "scaner.html",
-                points=points,
-                fileupload=True,
-                message=message
+                "scaner.html", points=points, fileupload=True, message=message
             )
         except Exception as e:
             app.logger.error(f"Error processing image: {e}")
@@ -179,7 +174,9 @@ def file_translation():
     """
     wrap_image_filepath = settings.join_path(settings.MEDIA_DIR, "magic_color.jpg")
     try:
-        translated_text, html_with_entities_name = document_results.getData(wrap_image_filepath)
+        translated_text, html_with_entities_name = document_results.getData(
+            wrap_image_filepath
+        )
         html_filepath = settings.join_path(settings.MEDIA_DIR, html_with_entities_name)
         # Зберігаємо початковий текст у current_text.txt
         current_text_path = settings.join_path(settings.MEDIA_DIR, "current_text.txt")
@@ -191,11 +188,13 @@ def file_translation():
         with open(changelog_path, "w", encoding="utf-8") as f:
             f.write("")
 
-        return redirect(url_for(
-            "file_translation_results",
-            translated_text=translated_text,
-            html_filepath=html_filepath
-        ))
+        return redirect(
+            url_for(
+                "file_translation_results",
+                translated_text=translated_text,
+                html_filepath=html_filepath,
+            )
+        )
     except Exception as e:
         app.logger.error(f"Translation error: {e}")
         flash(f"Translation error, try again", "danger")
@@ -226,7 +225,7 @@ def file_translation_results():
             "file_translation.html",
             translated_text=translated_text,
             html_with_entities=html_with_entities,
-            changelog=changelog_content
+            changelog=changelog_content,
         )
     except FileNotFoundError:
         flash("File not found", "error")
@@ -263,8 +262,10 @@ def save_translation():
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         changelog_entry = f"<h2>Change on {current_time}</h2>\n"
 
-        previous_sentences = re.split(r'(?<=[.!?])\s+', previous_text.strip()) if previous_text else []
-        new_sentences = re.split(r'(?<=[.!?])\s+', edited_text.strip())
+        previous_sentences = (
+            re.split(r"(?<=[.!?])\s+", previous_text.strip()) if previous_text else []
+        )
+        new_sentences = re.split(r"(?<=[.!?])\s+", edited_text.strip())
 
         max_len = max(len(previous_sentences), len(new_sentences))
         previous_sentences.extend([""] * (max_len - len(previous_sentences)))
@@ -272,10 +273,16 @@ def save_translation():
 
         changed = False
         for prev_sent, new_sent in zip(previous_sentences, new_sentences):
-            prev_sent_normalized = " ".join(prev_sent.strip().split()) if prev_sent else ""
+            prev_sent_normalized = (
+                " ".join(prev_sent.strip().split()) if prev_sent else ""
+            )
             new_sent_normalized = " ".join(new_sent.strip().split()) if new_sent else ""
 
-            if prev_sent_normalized != new_sent_normalized and prev_sent_normalized and new_sent_normalized:
+            if (
+                prev_sent_normalized != new_sent_normalized
+                and prev_sent_normalized
+                and new_sent_normalized
+            ):
                 changed = True
                 prev_words = prev_sent.split()
                 new_words = new_sent.split()
@@ -290,12 +297,22 @@ def save_translation():
                         highlighted_prev.append(word_text)
                         highlighted_new.append(word_text)
                     elif word.startswith("- "):
-                        highlighted_prev.append(f'<span class="highlight-changed">{word_text}</span>')
+                        highlighted_prev.append(
+                            f'<span class="highlight-changed">{word_text}</span>'
+                        )
                     elif word.startswith("+ "):
-                        highlighted_new.append(f'<span class="highlight-changed">{word_text}</span>')
+                        highlighted_new.append(
+                            f'<span class="highlight-changed">{word_text}</span>'
+                        )
 
-                changelog_entry += "<h3>Previous Sentence:</h3>\n<p>" + " ".join(highlighted_prev) + "</p>\n"
-                changelog_entry += "<h3>New Sentence:</h3>\n<p>" + " ".join(highlighted_new) + "</p>\n"
+                changelog_entry += (
+                    "<h3>Previous Sentence:</h3>\n<p>"
+                    + " ".join(highlighted_prev)
+                    + "</p>\n"
+                )
+                changelog_entry += (
+                    "<h3>New Sentence:</h3>\n<p>" + " ".join(highlighted_new) + "</p>\n"
+                )
 
         if not changed:
             changelog_entry = ""
@@ -323,18 +340,20 @@ def save_translation():
         with open(eng_html_path, "w", encoding="utf-8") as f:
             f.write(html_eng)
 
-        return redirect(url_for(
-            "file_translation_results",
-            translated_text=edited_text,
-            html_filepath=eng_html_path
-        ))
+        return redirect(
+            url_for(
+                "file_translation_results",
+                translated_text=edited_text,
+                html_filepath=eng_html_path,
+            )
+        )
     except Exception as e:
         app.logger.error(f"Error saving translation: {e}")
         flash(f"Error saving translation, try again!", "danger")
         return redirect(request.url)
 
 
-@app.route('/send-test-email', methods=['POST'])
+@app.route("/send-test-email", methods=["POST"])
 def test_email():
     """
     Send a test email based on provided JSON data.
@@ -354,7 +373,10 @@ def test_email():
         return jsonify(result)
     except Exception as e:
         app.logger.error(f"Error sending email: {e}")
-        return jsonify({"error": f"Email sending failed, try again"}), HTTPStatus.INTERNAL_SERVER_ERROR
+        return (
+            jsonify({"error": f"Email sending failed, try again"}),
+            HTTPStatus.INTERNAL_SERVER_ERROR,
+        )
 
 
 if __name__ == "__main__":
