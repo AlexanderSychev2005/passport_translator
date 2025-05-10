@@ -146,24 +146,21 @@ def save_to_file(filename, data):
 
 
 def extract_text_from_image(image_path):
-    try:
-        image = cv2.imread(image_path)
-        reader = easyocr.Reader(["en", "uk"], gpu=True)
-        result = reader.readtext(
-            image,
-            detail=0,
-            contrast_ths=0.5,
-            adjust_contrast=0.7,
-            text_threshold=0.6,
-            low_text=0.4,
-            canvas_size=2000,
-            decoder="wordbeamsearch",
-        )
-        if not result:
-            raise ValueError("Text on the image is not recognised.")
-        return " ".join(result)
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
+    image = cv2.imread(image_path)
+    reader = easyocr.Reader(["en", "uk"], gpu=True)
+    result = reader.readtext(
+        image,
+        detail=0,
+        contrast_ths=0.5,
+        adjust_contrast=0.7,
+        text_threshold=0.6,
+        low_text=0.4,
+        canvas_size=2000,
+        decoder="wordbeamsearch",
+    )
+    if not result:
+        raise ValueError("Text on the image is not recognised.")
+    return " ".join(result)
 
 
 def extract_mrz(full_text):
@@ -176,69 +173,65 @@ def extract_mrz(full_text):
 
 
 def getData(file_path):
-    try:
-        full_text = extract_text_from_image(file_path)
-        if not full_text:
-            raise ValueError("No text found in the image.")
-        mrz = extract_mrz(full_text)
-        if not mrz:
-            raise ValueError("No MRZ found in the text.")
+    full_text = extract_text_from_image(file_path)
+    if not full_text:
+        raise ValueError("No text found in the image.")
+    mrz = extract_mrz(full_text)
+    if not mrz:
+        raise ValueError("No MRZ found in the text.")
 
-        mrz_pattern = re.compile(
-            r"P<(?P<country>[A-Z]{3})"
-            r"(?P<surname>[A-Z]+)<<(?P<name>[A-Z]+)<+"
-            r"(?P<passport_number>[A-Z0-9]{8})<+"
-            r"."
-            r"(?P<nationality>[A-Z]{3})"
-            r"(?P<birth_date>\d{6})"
-            r"."
-            r"(?P<gender>[MF])"
-            r"(?P<expiry_date>\d{6})"
-            r"."
-            r"(?P<personal_number>[A-Z0-9]{13})"
-        )
-        match = mrz_pattern.search(mrz)
+    mrz_pattern = re.compile(
+        r"P<(?P<country>[A-Z]{3})"
+        r"(?P<surname>[A-Z]+)<<(?P<name>[A-Z]+)<+"
+        r"(?P<passport_number>[A-Z0-9]{8})<+"
+        r"."
+        r"(?P<nationality>[A-Z]{3})"
+        r"(?P<birth_date>\d{6})"
+        r"."
+        r"(?P<gender>[MF])"
+        r"(?P<expiry_date>\d{6})"
+        r"."
+        r"(?P<personal_number>[A-Z0-9]{13})"
+    )
+    match = mrz_pattern.search(mrz)
 
-        if match:
-            country = match.group("country")
-            name = match.group("name")
-            surname = match.group("surname")
-            passport_number = match.group("passport_number")
-            nationality = match.group("nationality")
-            birth_date = match.group("birth_date")
-            gender = match.group("gender")
-            expiry_date = match.group("expiry_date")
-            personal_number = match.group("personal_number")
-        else:
-            raise ValueError("MRZ format is incorrect.")
+    if match:
+        country = match.group("country")
+        name = match.group("name")
+        surname = match.group("surname")
+        passport_number = match.group("passport_number")
+        nationality = match.group("nationality")
+        birth_date = match.group("birth_date")
+        gender = match.group("gender")
+        expiry_date = match.group("expiry_date")
+        personal_number = match.group("personal_number")
+    else:
+        raise ValueError("MRZ format is incorrect.")
 
-        date_obj = datetime.strptime(birth_date, "%y%m%d")
-        formatted_date = date_obj.strftime("%d %b %Y")
+    date_obj = datetime.strptime(birth_date, "%y%m%d")
+    formatted_date = date_obj.strftime("%d %b %Y")
 
-        date_obj_exp = datetime.strptime(expiry_date, "%y%m%d")
-        formatted_date_exp = date_obj_exp.strftime("%d %b %Y")
+    date_obj_exp = datetime.strptime(expiry_date, "%y%m%d")
+    formatted_date_exp = date_obj_exp.strftime("%d %b %Y")
 
-        issue_date_obj = date_obj_exp.replace(year=date_obj_exp.year - 10)
-        formatted_date_issue = issue_date_obj.strftime("%d %b %Y")
+    issue_date_obj = date_obj_exp.replace(year=date_obj_exp.year - 10)
+    formatted_date_issue = issue_date_obj.strftime("%d %b %Y")
 
-        country_full = COUNTRIES_TRANSLATION.get(country, country)
-        parsed_results = {
-            "Country": f"{country}",
-            "Surname": f"{surname}",
-            "Name": f"{name}",
-            "Passport number": f"{passport_number}",
-            "Nationality": f"{nationality}",
-            "Full country": f"{country_full}",
-            "Date of birth": f"{translate_date(formatted_date)}",
-            "Gender": "KADIN" if gender == "F" else "ADAM",
-            "Date of issue": f"{translate_date(formatted_date_issue)}",
-            "Date of expiry": f"{translate_date(formatted_date_exp)}",
-            "Record number": f"{personal_number[:8]}-{personal_number[8:]}",
-            "MRZ": mrz,
-        }
-        file_path = "./static/media/passport_data.pdf"
-        save_to_file(file_path, parsed_results)
-        return file_path
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        return None
+    country_full = COUNTRIES_TRANSLATION.get(country, country)
+    parsed_results = {
+        "Country": f"{country}",
+        "Surname": f"{surname}",
+        "Name": f"{name}",
+        "Passport number": f"{passport_number}",
+        "Nationality": f"{nationality}",
+        "Full country": f"{country_full}",
+        "Date of birth": f"{translate_date(formatted_date)}",
+        "Gender": "KADIN" if gender == "F" else "ADAM",
+        "Date of issue": f"{translate_date(formatted_date_issue)}",
+        "Date of expiry": f"{translate_date(formatted_date_exp)}",
+        "Record number": f"{personal_number[:8]}-{personal_number[8:]}",
+        "MRZ": mrz,
+    }
+    file_path = "./static/media/passport_data.pdf"
+    save_to_file(file_path, parsed_results)
+    return file_path
