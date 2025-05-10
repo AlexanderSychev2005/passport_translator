@@ -1,5 +1,6 @@
 import base64
 import os
+import re
 
 import deepl
 import spacy
@@ -54,6 +55,8 @@ def getData(image_path):
             },
         )
         result = ocr_response.pages[0].markdown
+        if not re.search(r"\w+", result):
+            raise ValueError("No text found in the image.")
     except Exception as e:
         raise ValueError(f"OCR processing failed: {e}")
 

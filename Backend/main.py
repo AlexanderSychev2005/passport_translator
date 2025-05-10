@@ -215,7 +215,6 @@ def file_translation_results():
     try:
         with open(html_filepath, "r", encoding="utf-8") as f:
             html_with_entities = f.read()
-        # Читаємо журнал змін
         changelog_path = settings.join_path(settings.MEDIA_DIR, "changelog.md")
         changelog_content = ""
         if os.path.exists(changelog_path):
