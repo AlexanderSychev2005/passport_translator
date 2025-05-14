@@ -16,6 +16,7 @@ A Flask-based web application for translating Ukrainian international passports 
 - **Frontend**: HTML, CSS, SCSS, JS
 - **Libraries**:
   - `OpenCV` for image processing
+  - `Mistral AI` for image-to-text conversion
   - `SpaCy` for natural language processing
   - `Flask` for web framework
   - `ReportLab` for PDF generation
