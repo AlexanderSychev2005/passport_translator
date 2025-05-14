@@ -131,6 +131,40 @@
         let fileName = this.files.length > 0 ? this.files[0].name : "No file chosen";
         document.getElementById("file-name").textContent = fileName;
       });
+
+      const alerts = document.querySelectorAll(".alert")
+      alerts.forEach((alert) => {
+        let timer;
+        let isHovered = false;
+
+        alert.addEventListener("mouseenter", () => {
+          isHovered = true;
+          clearTimeout(timer);
+        });
+
+        alert.addEventListener("mouseleave", () => {
+          isHovered = false;
+          timer = setTimeout(() => {
+            fadeOutAlert(alert);
+          }, 2000);
+        });
+
+        timer = setTimeout(() => {
+            if (!isHovered) {
+                fadeOutAlert(alert);
+            }
+            }, 5000);
+        });
+
+        function fadeOutAlert(alert) {
+          alert.style.transition = 'opacity 1s ease';
+          alert.style.opacity = '0';
+
+          setTimeout(() => {
+             const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+              bsAlert.close();
+          }, 1000);
+        }
     });
 
     function showLoader() {
