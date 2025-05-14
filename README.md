@@ -1,6 +1,6 @@
 # Passport Translator
 
-A Flask-based web application for translating documents and images with additional features like named entity recognition (NER), document scanning, and email notifications.
+A Flask-based web application for translating documents and images with additional features like named entity recognition (NER), and email notifications.
 
 ## Features
 
