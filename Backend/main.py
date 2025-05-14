@@ -178,12 +178,11 @@ def file_translation():
             wrap_image_filepath
         )
         html_filepath = settings.join_path(settings.MEDIA_DIR, html_with_entities_name)
-        # Зберігаємо початковий текст у current_text.txt
+
         current_text_path = settings.join_path(settings.MEDIA_DIR, "current_text.txt")
         with open(current_text_path, "w", encoding="utf-8") as f:
             f.write(translated_text)
 
-        # Очищаємо файл changelog.md одразу після сканування та перекладу
         changelog_path = settings.join_path(settings.MEDIA_DIR, "changelog.md")
         with open(changelog_path, "w", encoding="utf-8") as f:
             f.write("")

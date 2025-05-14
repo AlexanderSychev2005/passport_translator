@@ -22,7 +22,7 @@ class DocumentScan:
 
     @staticmethod
     def resizer(image, width=500):
-        # get widht and height
+        # get width and height
         h, w, c = image.shape
 
         height = int((h / w) * width)
