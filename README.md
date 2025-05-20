@@ -1,6 +1,6 @@
 # Passport Translator
 
-A Flask-based web application for translating documents and images with additional features like named entity recognition (NER), document scanning, and email notifications.
+A Flask-based web application for translating Ukrainian international passports to Turkish, multilingual translation documents and images with additional features like named entity recognition (NER), and email notifications.
 
 ## Features
 
@@ -16,6 +16,7 @@ A Flask-based web application for translating documents and images with addition
 - **Frontend**: HTML, CSS, SCSS, JS
 - **Libraries**:
   - `OpenCV` for image processing
+  - `Mistral AI` for image-to-text conversion
   - `SpaCy` for natural language processing
   - `Flask` for web framework
   - `ReportLab` for PDF generation
