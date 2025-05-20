@@ -90,7 +90,6 @@
         <span class="highlight">below</span>
       </h1>
       <h3>Please make sure that you have a good quality of your picture</h3>
-
       <form action="#" method="POST" enctype="multipart/form-data" class="upload-form">
         <div class="input-group">
           <label for="file-upload" class="custom-file-upload">Choose File</label>
@@ -99,14 +98,22 @@
           <span id="file-name"></span>
         </div>
       </form>
+      <div id="camera_wrapper" class="container mt-4">
+        <h3 class="text-center">Take a picture with your camera</h3>
+        <div class="text-center">
+          <button type="button" class="btn btn-primary" id="start-camera" style="font-size: 16px;">📸 Open Camera</button>
+          <video id="video" width="100%" height="auto" autoplay style="display:none; margin-top: 10px;"></video>
+          <button type="button" class="btn btn-success mt-2" id="take-photo" style="display:none; margin-bottom: 10px;font-size: 16px;">📷 Take Photo</button>
+        </div>
+      </div>
     </div>
-
+    <div class="text-center mt-3" style="text-align: center">
+      <canvas id="canvas" style="max-width: 100%; height: auto; display: none; margin-bottom: 10px"></canvas>
+    </div>
     {% if fileupload %}
-    <div class="col" align="center">
-      <canvas id="canvas" style="max-width: 100%; height: auto;"></canvas>
-    </div>
     <script>
       loadPoints({{ points | tojson }});
+      document.getElementById("canvas").style.display = "block";
     </script>
     {% endif %}
 
@@ -124,52 +131,94 @@
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      document.getElementById('loader').style.display = 'none';
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById('loader').style.display = 'none';
 
-      document.getElementById("file-upload").addEventListener("change", function () {
-        let fileName = this.files.length > 0 ? this.files[0].name : "No file chosen";
-        document.getElementById("file-name").textContent = fileName;
-      });
-
-      const alerts = document.querySelectorAll(".alert")
-      alerts.forEach((alert) => {
-        let timer;
-        let isHovered = false;
-
-        alert.addEventListener("mouseenter", () => {
-          isHovered = true;
-          clearTimeout(timer);
-        });
-
-        alert.addEventListener("mouseleave", () => {
-          isHovered = false;
-          timer = setTimeout(() => {
-            fadeOutAlert(alert);
-          }, 2000);
-        });
-
-        timer = setTimeout(() => {
-            if (!isHovered) {
-                fadeOutAlert(alert);
-            }
-            }, 5000);
-        });
-
-        function fadeOutAlert(alert) {
-          alert.style.transition = 'opacity 1s ease';
-          alert.style.opacity = '0';
-
-          setTimeout(() => {
-             const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
-              bsAlert.close();
-          }, 1000);
-        }
+    document.getElementById("file-upload").addEventListener("change", function () {
+      let fileName = this.files.length > 0 ? this.files[0].name : "No file chosen";
+      document.getElementById("file-name").textContent = fileName;
     });
 
-    function showLoader() {
-      document.getElementById('loader').style.display = 'flex';
+    const startCameraBtn = document.getElementById("start-camera");
+    const video = document.getElementById("video");
+    const takePhotoBtn = document.getElementById("take-photo");
+    const canvas = document.getElementById("canvas");
+    const fileInput = document.getElementById("file-upload");
+    const fileNameSpan = document.getElementById("file-name");
+
+    let stream;
+
+    startCameraBtn.addEventListener("click", async () => {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        video.style.display = "block";
+        takePhotoBtn.style.display = "inline-block";
+      } catch (err) {
+        alert("Failed to access camera: " + err.message);
+      }
+    });
+
+   takePhotoBtn.addEventListener("click", () => {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob((blob) => {
+      const file = new File([blob], "webcam_photo.jpg", { type: "image/jpeg" });
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      fileInput.files = dataTransfer.files;
+      fileNameSpan.textContent = file.name;
+
+      const imageUrl = URL.createObjectURL(file);
+      process(imageUrl);
+    }, "image/jpeg");
+
+    stream.getTracks().forEach(track => track.stop());
+    video.style.display = "none";
+    takePhotoBtn.style.display = "none";
+  });
+
+    const alerts = document.querySelectorAll(".alert")
+    alerts.forEach((alert) => {
+      let timer;
+      let isHovered = false;
+
+      alert.addEventListener("mouseenter", () => {
+        isHovered = true;
+        clearTimeout(timer);
+      });
+
+      alert.addEventListener("mouseleave", () => {
+        isHovered = false;
+        timer = setTimeout(() => {
+          fadeOutAlert(alert);
+        }, 2000);
+      });
+
+      timer = setTimeout(() => {
+        if (!isHovered) {
+          fadeOutAlert(alert);
+        }
+      }, 5000);
+    });
+
+    function fadeOutAlert(alert) {
+      alert.style.transition = 'opacity 1s ease';
+      alert.style.opacity = '0';
+
+      setTimeout(() => {
+        const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+        bsAlert.close();
+      }, 1000);
     }
-  </script>
+  });
+
+  function showLoader() {
+    document.getElementById('loader').style.display = 'flex';
+  }
+</script>
 </body>
 </html>
